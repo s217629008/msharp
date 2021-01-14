@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -206,6 +207,76 @@ public class MainActivity extends AppCompatActivity {
                 Intent startIntent = new Intent(getApplicationContext(), activity_editor.class);
                 startIntent.putExtras(b);
                 startActivity(startIntent);
+            }
+
+            @Override
+            public void onDeleteClicked(int position) {
+                //String fileToDelete = File_names.get(position).getText();
+                ArrayList<String> FileNames = new ArrayList<>();
+                String lineSeparator = System.getProperty("line.separator");
+                //load existing list of file names;
+                FileOutputStream fos = null;
+                FileInputStream fis = null;
+
+                try {
+                    fis = openFileInput("program_names.ms");
+                    InputStreamReader isr = new InputStreamReader(fis);
+                    BufferedReader br = new BufferedReader(isr);
+                    StringBuilder sb = new StringBuilder();
+                    String text;
+                    while ((text = br.readLine()) != null) {
+                        FileNames.add(text);
+                    }
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (fis != null) {
+                        try {
+                            fis.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+
+                FileNames.remove(position);
+
+                //save new list, now with new file name, with it at top of the list
+                try {
+                    fos = openFileOutput("program_names.ms", MODE_PRIVATE);
+                    for(int x = 0; x < FileNames.size(); x++)
+                    {
+                        String temp = FileNames.get(x);
+
+                            fos.write(temp.getBytes());
+                            fos.write(lineSeparator.getBytes());
+
+
+                    }
+                    //Toast.makeText(context, "Saved to " + getFilesDir() + "/" + myProgramName, Toast.LENGTH_LONG).show();
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    if (fos != null)
+                    {
+                        try {
+                            fos.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                File_names.remove(position);
+                MainAdapter.notifyItemRemoved(position);
             }
         });
 

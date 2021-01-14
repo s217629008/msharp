@@ -20,6 +20,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
     public interface OnItemClickListener
     {
         void onItemClicked(int position);
+        void onDeleteClicked(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener)
@@ -30,10 +31,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
     public static class MyViewHolder extends RecyclerView.ViewHolder
     {
         public TextView myTextView;
+        public ImageView mDeleteImage;
         public MyViewHolder(View itemView, final OnItemClickListener listener)
         {
             super(itemView);
             myTextView = itemView.findViewById(R.id.textView);
+            mDeleteImage = itemView.findViewById(R.id.image_delete);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -45,6 +48,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
                         if(position != RecyclerView.NO_POSITION)
                         {
                             listener.onItemClicked(position);
+                        }
+                    }
+                }
+            });
+
+            mDeleteImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(listener != null)
+                    {
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION)
+                        {
+                            listener.onDeleteClicked(position);
                         }
                     }
                 }
