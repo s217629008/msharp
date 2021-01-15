@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        FloatingActionButton editorActivityBtn = (FloatingActionButton)findViewById(R.id.newProjectFAB);
+        final FloatingActionButton editorActivityBtn = (FloatingActionButton)findViewById(R.id.newProjectFAB);
         editorActivityBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,11 +103,6 @@ public class MainActivity extends AppCompatActivity {
                 FileInputStream fis = null;
                 final boolean[] makeNewProgram = {true};
                 try {
-  //                  fis = openFileInput(FILE_NAME);
-  //                  InputStreamReader isr = new InputStreamReader(fis);
-  //                  BufferedReader br = new BufferedReader(isr);
-  //                  StringBuilder sb = new StringBuilder();
-  //                  String text;
 
 
                     final Handler[] handler = {new Handler() {
@@ -151,21 +147,45 @@ public class MainActivity extends AppCompatActivity {
                     }
                     catch (RuntimeException e) {}
 
-                    if(makeNewProgram[0])
+                    boolean programNameNull = programTitle[0].equals("");
+
+                    if(!programNameNull) {
+
+
+                        if (makeNewProgram[0]) {
+                            Functions fun = new Functions();
+
+                            ArrayList<String> existingPrograms = fun.loadFileNamesToArray(context);
+
+                            boolean programExists = false;
+
+                            for (int x = 0; x < existingPrograms.size(); x++) {
+                                if (existingPrograms.get(x).equals(programTitle[0])) {
+                                    programExists = true;
+                                }
+                            }
+
+                            if (!programExists) {
+                                ArrayList<String> programName = new ArrayList<String>();
+
+                                programName.add(programTitle[0]);
+                                Bundle b = new Bundle();
+                                b.putStringArrayList("programName", programName);
+
+                                Intent startIntent = new Intent(getApplicationContext(), activity_editor.class);
+                                startIntent.putExtras(b);
+                                startActivity(startIntent);
+                            } else {
+                                Toast toast = Toast.makeText(context, "A program with this name already exists.", Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+
+                        }
+                    }
+                    else
                     {
-                        ArrayList<String> programName = new ArrayList<String>();
-
-                        //while((text = br.readLine()) != null)
-                        //{
-                        //   loadedLines.add(text);
-                        //}
-                        programName.add(programTitle[0]);
-                        Bundle b = new Bundle();
-                        b.putStringArrayList("programName", programName);
-
-                        Intent startIntent = new Intent(getApplicationContext(), activity_editor.class);
-                        startIntent.putExtras(b);
-                        startActivity(startIntent);
+                        Toast toast = Toast.makeText(context, "Invalid program name.", Toast.LENGTH_LONG);
+                        toast.show();
                     }
 
 
