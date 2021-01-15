@@ -72,6 +72,13 @@ public class MultExpression extends Expression{
 
                 this.result = lhs / rhs;
                 break;
+            case "%":
+
+                this.result = lhs % rhs;
+                break;
+            case "^" :
+                this.result = (int)Math.pow(lhs, rhs);
+                break;
         }
 
     }

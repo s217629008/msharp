@@ -210,7 +210,7 @@ public class Parser {
         {
             rhs = new BoolFactor(expression[2]);
         }
-        else if(isInteger(expression[0]))
+        else if(isInteger(expression[2]))
         {
             rhs = new IntegerFactor(Integer.parseInt(expression[2]));
         }
@@ -237,6 +237,12 @@ public class Parser {
                 MultExpression newDivideExp = new MultExpression(lhs, "/",rhs, Numbers, Strings, Bools);
                 return newDivideExp;
 
+            case "%":
+                MultExpression newModExp = new MultExpression(lhs, "%", rhs, Numbers, Strings, Bools);
+                return  newModExp;
+            case "^":
+                MultExpression newPowExp = new MultExpression(lhs, "^", rhs, Numbers, Strings, Bools);
+                return  newPowExp;
             case "<":
                 RelationExpression newLT = new RelationExpression(lhs, "<",rhs, Numbers);
                 return  newLT;

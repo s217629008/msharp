@@ -107,6 +107,8 @@ public class Functions {
             case "+":
             case "-":
             case "*":
+            case "%":
+            case "^":
             case "/":
             case "<":
             case ">":
