@@ -16,6 +16,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
@@ -39,6 +44,11 @@ public class activity_console extends AppCompatActivity {
 
         BottomNavigationView botNav = findViewById(R.id.bottom_navigation);
         botNav.setOnNavigationItemSelectedListener(navListener);
+        botNav.getMenu().getItem(0).setChecked(false);
+        botNav.getMenu().getItem(1).setChecked(true);
+
+        ArrayList<String> FileNames = new ArrayList<>();
+
 
     }
 
@@ -49,7 +59,7 @@ public class activity_console extends AppCompatActivity {
 
                     switch(item.getItemId())
                     {
-                        case R.id.play:
+                        case R.id.console:
                             ArrayList<String> loadedLines = getIntent().getStringArrayListExtra("program");
 
                             TextView textView = (TextView) findViewById(R.id.simpleTextView);
@@ -92,6 +102,17 @@ public class activity_console extends AppCompatActivity {
                                 }
                             }
                             program.Run(textView);
+                            break;
+                        case R.id.code:
+
+                            ArrayList<String> programName = getIntent().getStringArrayListExtra("programName");
+
+                            Bundle b = new Bundle();
+                            b.putStringArrayList("programName", programName);
+
+                            Intent startIntent = new Intent(getApplicationContext(), activity_editor.class);
+                            startIntent.putExtras(b);
+                            startActivity(startIntent);
                             break;
                     }
                     return true;

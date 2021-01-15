@@ -36,18 +36,6 @@ public class activity_editor extends AppCompatActivity {
     private static final String FILE_NAME = "test.txt";
     private String myProgramName;
 
-    public static Map<String, String> TempStrings = new Hashtable();
-    public static Map<String, Integer> TempNumbers = new Hashtable();
-    public static Map<String, String> TempBools = new Hashtable();
-
-
-
-
-
-
-
-
-
     @Override
     public void onBackPressed() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -72,100 +60,13 @@ public class activity_editor extends AppCompatActivity {
 
 
 
+                Functions fun = new Functions();
 
+                fun.writeProgramToFile(myProgramName,context,root); //save the program to a file
 
-                String lineSeparator = System.getProperty("line.separator");
-                //save the program
-                ArrayList<String> saveLines = new ArrayList<String>();
-                getPrintLines(saveLines, root);
-                FileOutputStream fos = null;
+                ArrayList<String> FileNames = fun.loadFileNamesToArray(context); //load the file names
 
-                try {
-                    fos = openFileOutput(myProgramName, MODE_PRIVATE);
-                    for(int x = 0; x < saveLines.size(); x++)
-                    {
-                        fos.write(saveLines.get(x).getBytes());
-                        fos.write(lineSeparator.getBytes());
-                    }
-                    Toast.makeText(context, "Saved to " + getFilesDir() + "/" + myProgramName, Toast.LENGTH_LONG).show();
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    if (fos != null)
-                    {
-                        try {
-                            fos.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                //save the file name
-
-                ArrayList<String> FileNames = new ArrayList<>();
-                //load existing list of file names;
-                FileInputStream fis = null;
-                try {
-                    fis = openFileInput("program_names.ms");
-                    InputStreamReader isr = new InputStreamReader(fis);
-                    BufferedReader br = new BufferedReader(isr);
-                    StringBuilder sb = new StringBuilder();
-                    String text;
-                    while ((text = br.readLine()) != null) {
-                        FileNames.add(text);
-                    }
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    if (fis != null) {
-                        try {
-                            fis.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-
-                //save new list, now with new file name, with it at top of the list
-                try {
-                    fos = openFileOutput("program_names.ms", MODE_PRIVATE);
-                    fos.write(myProgramName.getBytes());
-                    fos.write(lineSeparator.getBytes());
-                    for(int x = 0; x < FileNames.size(); x++)
-                    {
-                        String temp = FileNames.get(x);
-                        if(!temp.equals(myProgramName))
-                        {
-                            fos.write(temp.getBytes());
-                            fos.write(lineSeparator.getBytes());
-                        }
-
-                    }
-                    //Toast.makeText(context, "Saved to " + getFilesDir() + "/" + myProgramName, Toast.LENGTH_LONG).show();
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                finally {
-                    if (fos != null)
-                    {
-                        try {
-                            fos.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-
+                fun.saveFileNamesWithNewFile(myProgramName,context,FileNames); //save list of files with newly created file included
 
                 Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(startIntent);
@@ -181,33 +82,6 @@ public class activity_editor extends AppCompatActivity {
 
     }
 
-    public void getPrintLines(ArrayList<String> output, TreeNode root)
-    {
-        ArrayList<TreeNode> childs = root.getChildren();
-
-        if(childs.size() != 0)
-        {
-            if(root.ID != 0)
-            {
-                output.add(root.data + ";" + Integer.toString(root.type) + ";" + Integer.toString(root.ID) + ";" + Integer.toString(root.getParent().ID));
-            }
-            for(int x = 0; x < childs.size(); x++)
-            {
-                getPrintLines(output, childs.get(x));
-            }
-        }
-        else
-        {
-
-                output.add(root.data + ";" + Integer.toString(root.type) + ";" + Integer.toString(root.ID) + ";" + Integer.toString(root.getParent().ID));
-
-        }
-    }
-
-
-    
-
-
 
 
     @Override
@@ -216,11 +90,8 @@ public class activity_editor extends AppCompatActivity {
         //ArrayList<String> load = getIntent().getStringArrayListExtra("loadedLines");
         setContentView(R.layout.activity_editor);
 
-
-
         drawerlayout = findViewById(R.id.drawer_layout);
         navigationview = findViewById(R.id.navigationView);
-
 
         DraggableTreeView draggableTreeView = (DraggableTreeView) findViewById(R.id.dtv);
         root = new TreeNode(this);
@@ -248,20 +119,17 @@ public class activity_editor extends AppCompatActivity {
                 while ((text = br.readLine()) != null) {
                     loadedCode.add(text);
                 }
-                for(int x = 0; x < loadedCode.size(); x++)
-                {
+                for (int x = 0; x < loadedCode.size(); x++) {
                     //output.add(root.data + ";" + Integer.toString(root.type) + ";" + Integer.toString(root.ID) + ";" + Integer.toString(root.getParent().ID));
 
                     String[] temp = loadedCode.get(x).split(";");
-                    if(Integer.parseInt(temp[3])==0) //root is parent
+                    if (Integer.parseInt(temp[3]) == 0) //root is parent
                     {
                         root.addChild(new TreeNode(temp[0], Integer.parseInt(temp[1]), Integer.parseInt(temp[2])));
-                    }
-                    else
-                    {
+                    } else {
 
 
-                        root.addChildToID(Integer.parseInt(temp[3]),new TreeNode(temp[0], Integer.parseInt(temp[1]), Integer.parseInt(temp[2])));
+                        root.addChildToID(Integer.parseInt(temp[3]), new TreeNode(temp[0], Integer.parseInt(temp[1]), Integer.parseInt(temp[2])));
 
                     }
 
@@ -282,11 +150,10 @@ public class activity_editor extends AppCompatActivity {
                 }
             }
 
-        }
-        catch (Exception e)
-        {
+        } finally {
 
         }
+
         /*
         TreeNode item = new TreeNode("Item 1");
         TreeNode item2 = new TreeNode("Item 2");
@@ -446,7 +313,10 @@ public class activity_editor extends AppCompatActivity {
     {
         if(x.getChildren().size() == 0)
         {
-            program.add(x.data.toString());
+            if(x.ID != 0)
+            {
+                program.add(x.data.toString());
+            }
         }
         else
         {
@@ -476,12 +346,35 @@ public class activity_editor extends AppCompatActivity {
 
                     switch(item.getItemId())
                     {
-                        case R.id.play:
+                        case R.id.console:
+                            Functions fun = new Functions();
+                            //save functionm later
+                            fun.writeProgramToFile(myProgramName,context,root);
+                            //save the file name
+
+                            ArrayList<String> FileNames = fun.loadFileNamesToArray(context);
+                            //load existing list of file names;
+
+
+                            //save new list, now with new file name, with it at top of the list
+                           fun.saveFileNamesWithNewFile(myProgramName,context,FileNames);
+
+                            ///////////////////////////////////////////////////////////////////////////
                             ArrayList<String> program = getProgram(root);
                             Intent startIntent = new Intent(getApplicationContext(), activity_console.class);
                             Bundle b = new Bundle();
-                            b.putStringArrayList("program", program);
+                            b.putStringArrayList("program", program); //bundle the code
+
+                            ArrayList<String> programName = new ArrayList<String>();
+
+                            programName.add(myProgramName);
+                            Bundle p = new Bundle();
+
+
+                            p.putStringArrayList("programName", programName); //bundle the name
+
                             startIntent.putExtras(b);
+                            startIntent.putExtras(p);
                             startActivity(startIntent);
                             break;
                     }

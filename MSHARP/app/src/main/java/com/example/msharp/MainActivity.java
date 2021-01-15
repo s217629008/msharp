@@ -194,16 +194,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClicked(int position) {
                 ArrayList<String> programName = new ArrayList<String>();
-
-
-                //while((text = br.readLine()) != null)
-                //{
-                //   loadedLines.add(text);
-                //}
                 programName.add(File_names.get(position).getText());
                 Bundle b = new Bundle();
                 b.putStringArrayList("programName", programName);
-
                 Intent startIntent = new Intent(getApplicationContext(), activity_editor.class);
                 startIntent.putExtras(b);
                 startActivity(startIntent);
