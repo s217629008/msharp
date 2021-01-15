@@ -1,5 +1,6 @@
 package com.example.msharp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -10,6 +11,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -42,6 +46,126 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<SavedItem> File_names = new ArrayList<>();
     private Context context;
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.home_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId())
+        {
+            case R.id.new_program:
+            {
+                final String[] programTitle = new String[1];
+                FileInputStream fis = null;
+                final boolean[] makeNewProgram = {true};
+                try {
+
+
+                    final Handler[] handler = {new Handler() {
+                        @Override
+                        public void handleMessage(Message mesg) {
+                            throw new RuntimeException();
+                        }
+                    }};
+
+                    AlertDialog.Builder alert = new AlertDialog.Builder(context);
+
+                    alert.setTitle("Please enter program title:");
+
+
+                    // Set an EditText view to get user input
+                    final EditText input = new EditText(context);
+                    alert.setView(input);
+
+                    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            String value = input.getText().toString();
+
+                            programTitle[0] = value;
+
+                            handler[0].sendMessage(handler[0].obtainMessage());
+
+                        }
+                    });
+
+                    alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            // Canceled.
+                            handler[0].sendMessage(handler[0].obtainMessage());
+                            makeNewProgram[0] = false;
+                        }
+                    });
+
+                    alert.show();
+
+                    try{
+                        Looper.loop();
+                    }
+                    catch (RuntimeException e) {}
+
+                    boolean programNameNull = programTitle[0].equals("");
+
+                    if(!programNameNull) {
+
+
+                        if (makeNewProgram[0]) {
+                            Functions fun = new Functions();
+
+                            ArrayList<String> existingPrograms = fun.loadFileNamesToArray(context);
+
+                            boolean programExists = false;
+
+                            for (int x = 0; x < existingPrograms.size(); x++) {
+                                if (existingPrograms.get(x).equals(programTitle[0])) {
+                                    programExists = true;
+                                }
+                            }
+
+                            if (!programExists) {
+                                ArrayList<String> programName = new ArrayList<String>();
+
+                                programName.add(programTitle[0]);
+                                Bundle b = new Bundle();
+                                b.putStringArrayList("programName", programName);
+
+                                Intent startIntent = new Intent(getApplicationContext(), activity_editor.class);
+                                startIntent.putExtras(b);
+                                startActivity(startIntent);
+                            } else {
+                                Toast toast = Toast.makeText(context, "A program with this name already exists.", Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        Toast toast = Toast.makeText(context, "Invalid program name.", Toast.LENGTH_LONG);
+                        toast.show();
+                    }
+
+
+                    //           } catch (FileNotFoundException e) {
+                    //               e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+
+
+            }
+            }
+
+
+        return true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -49,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> FileNames = new ArrayList<>();
         //load existing list of file names;
         FileInputStream fis = null;
+
         try {
             fis = openFileInput("program_names.ms");
             InputStreamReader isr = new InputStreamReader(fis);
@@ -77,8 +202,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = findViewById(R.id.toolBar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Programs");
 
         for(int x = 0; x < FileNames.size(); x++)
         {
@@ -94,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+/*
         final FloatingActionButton editorActivityBtn = (FloatingActionButton)findViewById(R.id.newProjectFAB);
         editorActivityBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -199,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             }
-        });
+        });*/
     }
 
     public void buildRecyclerView() {

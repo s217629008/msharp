@@ -5,14 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:theme="@style/ThemeOverlay.AppCompat">
 
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolBar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimaryDark"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"></androidx.appcompat.widget.Toolbar>
+        android:background="@color/colorWhite"
+        android:theme="@style/AppTheme.toolbarTheme">
+
+    </androidx.appcompat.widget.Toolbar>
 
 </LinearLayout>

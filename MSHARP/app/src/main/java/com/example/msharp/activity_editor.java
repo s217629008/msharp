@@ -2,6 +2,7 @@ package com.example.msharp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.AlertDialog;
@@ -82,6 +83,15 @@ public class activity_editor extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home){
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 
     @Override
@@ -90,8 +100,10 @@ public class activity_editor extends AppCompatActivity {
         //ArrayList<String> load = getIntent().getStringArrayListExtra("loadedLines");
         setContentView(R.layout.activity_editor);
 
+
         drawerlayout = findViewById(R.id.drawer_layout);
         navigationview = findViewById(R.id.navigationView);
+
 
         DraggableTreeView draggableTreeView = (DraggableTreeView) findViewById(R.id.dtv);
         root = new TreeNode(this);
@@ -104,7 +116,11 @@ public class activity_editor extends AppCompatActivity {
             ArrayList<String> programName = getIntent().getStringArrayListExtra("programName");
             //Toast.makeText(context, loadedLines.get(0), Toast.LENGTH_LONG).show();
             myProgramName = programName.get(0);
-
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle(myProgramName + ".m#");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_backarror);
             ArrayList<String> loadedCode = new ArrayList<>();
             //load existing list of file names;
             FileInputStream fis = null;
