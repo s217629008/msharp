@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 
 
@@ -132,9 +133,14 @@ public class MainActivity extends AppCompatActivity {
                                 programName.add(programTitle[0]);
                                 Bundle b = new Bundle();
                                 b.putStringArrayList("programName", programName);
+                                ArrayList<Integer> newFile = new ArrayList<>();
+                                newFile.add(1);
+                                Bundle n = new Bundle();
+                                n.putIntegerArrayList("newFile", newFile);
 
                                 Intent startIntent = new Intent(getApplicationContext(), activity_editor.class);
                                 startIntent.putExtras(b);
+                                startIntent.putExtras(n);
                                 startActivity(startIntent);
                             } else {
                                 Toast toast = Toast.makeText(context, "A program with this name already exists.", Toast.LENGTH_LONG);
@@ -390,8 +396,10 @@ public class MainActivity extends AppCompatActivity {
                 alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         // Canceled.
-                        handler[0].sendMessage(handler[0].obtainMessage());
+
                         makeNewProgram[0] = false;
+
+                        handler[0].sendMessage(handler[0].obtainMessage());
                     }
                 });
 
@@ -404,12 +412,13 @@ public class MainActivity extends AppCompatActivity {
                 }
                 catch (RuntimeException e) {}
 
-                boolean programNameNull = newName[0].equals(""); //new name not blank
 
+                if (makeNewProgram[0]) { //didn't cancel
+                    boolean programNameNull = newName[0].equals(""); //new name not blank
                 if(!programNameNull) {
 
 
-                    if (makeNewProgram[0]) { //didn't cancel
+
 
 
 
@@ -423,8 +432,11 @@ public class MainActivity extends AppCompatActivity {
 
                         if (!programExists) { //ain't reusing an existing name
                             FileOutputStream fos = null;
+                            String file = fileNames.get(position);
                             fileNames.remove(position);
                             fileNames.add(position, newName[0]); //add updated name to the list
+
+
 
                             //save new list, now with new file name, with it at top of the list
                             try {
@@ -441,6 +453,9 @@ public class MainActivity extends AppCompatActivity {
 
 
                                 }
+
+
+
 
 
                                 //Toast.makeText(context, "Saved to " + getFilesDir() + "/" + myProgramName, Toast.LENGTH_LONG).show();
@@ -473,21 +488,34 @@ public class MainActivity extends AppCompatActivity {
                                 File_names.add(temp);
                             }
 
+                            buildRecyclerView();
+
+                            try {
+                                fos = openFileOutput(file, MODE_PRIVATE);
+                                fos.write("".getBytes());
+                                fos.close();
+                            }
+                            catch (Exception e)
+                            {
+
+                            }
+
                             //load(); //load saved files names
 
-                            buildRecyclerView();
+
 
                         } else {
                             Toast toast = Toast.makeText(context, "A program with this name already exists.", Toast.LENGTH_LONG);
                             toast.show();
                         }
 
-                    }
+
                 }
                 else
                 {
                     Toast toast = Toast.makeText(context, "Invalid program name.", Toast.LENGTH_LONG);
                     toast.show();
+                }
                 }
             }
 
@@ -510,6 +538,11 @@ public class MainActivity extends AppCompatActivity {
                     while ((text = br.readLine()) != null) {
                         FileNames.add(text);
                     }
+                    String file = FileNames.get(position);
+                    fos = openFileOutput(file, MODE_PRIVATE);
+                    fos.write("".getBytes());
+                    fos.close();
+                    FileNames.remove(position);
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -526,7 +559,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
-                FileNames.remove(position);
 
                 //save new list, now with new file name, with it at top of the list
                 try {
@@ -560,6 +592,7 @@ public class MainActivity extends AppCompatActivity {
 
                 File_names.remove(position);
                 MainAdapter.notifyItemRemoved(position);
+
             }
 
 

@@ -112,6 +112,7 @@ public class activity_editor extends AppCompatActivity {
         BottomNavigationView botNav = findViewById(R.id.bottom_navigation);
         botNav.setOnNavigationItemSelectedListener(navListener);
 
+
         try {
             ArrayList<String> programName = getIntent().getStringArrayListExtra("programName");
             //Toast.makeText(context, loadedLines.get(0), Toast.LENGTH_LONG).show();
@@ -124,6 +125,9 @@ public class activity_editor extends AppCompatActivity {
             ArrayList<String> loadedCode = new ArrayList<>();
             //load existing list of file names;
             FileInputStream fis = null;
+
+
+            //load code
 
             try {
                 Functions fun = new Functions();
