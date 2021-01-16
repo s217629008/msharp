@@ -401,12 +401,77 @@ public class Functions {
         }
     }
 
+    public ArrayList<String> loadCodeIntoArrayFromFile(String programName, Context context) {
+        ArrayList<String> loadedCode = new ArrayList<>();
+        try {
+            FileInputStream fis = null;
+            fis = context.openFileInput(programName);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String text;
+            while ((text = br.readLine()) != null) {
+                loadedCode.add(text);
+            }
+
+        }
+        catch(FileNotFoundException e)
+        {
+
+        }
+        catch (IOException e) {
+
+            e.printStackTrace();
+        }
+
+        finally {
+
+        }
+
+        return loadedCode;
+
+}
+
     public void writeProgramToFile(String myProgramName, Context context, TreeNode root)
     {
         String lineSeparator = System.getProperty("line.separator");
         //save the program
         ArrayList<String> saveLines = new ArrayList<String>();
         getPrintLines(saveLines, root);
+        FileOutputStream fos = null;
+
+        try {
+            fos = context.openFileOutput(myProgramName, context.MODE_PRIVATE);
+            for(int x = 0; x < saveLines.size(); x++)
+            {
+                fos.write(saveLines.get(x).getBytes());
+                fos.write(lineSeparator.getBytes());
+            }
+            //Toast.makeText(context, "Saved to " + context.getFilesDir() + "/" + myProgramName, Toast.LENGTH_LONG).show();
+            //debuging toast
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if (fos != null)
+            {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void writeProgramToFile(String myProgramName, Context context, ArrayList<String> code) //overload that takes arraylist instead of treenode
+    {
+        String lineSeparator = System.getProperty("line.separator");
+        //save the program
+        ArrayList<String> saveLines = code;
         FileOutputStream fos = null;
 
         try {

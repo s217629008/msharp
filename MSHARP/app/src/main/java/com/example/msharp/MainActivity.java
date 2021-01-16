@@ -349,6 +349,150 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onEditClicked(int position) {
+                Functions fun = new Functions();
+                ArrayList<String> fileNames = fun.loadFileNamesToArray(context);
+                ArrayList<String> currentCode = fun.loadCodeIntoArrayFromFile(fileNames.get(position), context);
+                String oldName;
+                final boolean[] makeNewProgram = new boolean[1];
+                makeNewProgram[0] = true;
+                final String[] newName = new String[1];
+                String lineSeparator = System.getProperty("line.separator");
+
+
+                final Handler[] handler = {new Handler() {
+                    @Override
+                    public void handleMessage(Message mesg) {
+                        throw new RuntimeException();
+                    }
+                }};
+                //prompt user for new name
+                AlertDialog.Builder alert = new AlertDialog.Builder(context);
+
+                alert.setTitle("Edit program name:");
+
+
+                // Set an EditText view to get user input
+                final EditText input = new EditText(context);
+                alert.setView(input);
+
+                alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        String value = input.getText().toString();
+
+                        newName[0] = value; //new name for the file
+
+                        handler[0].sendMessage(handler[0].obtainMessage());
+
+                    }
+                });
+
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // Canceled.
+                        handler[0].sendMessage(handler[0].obtainMessage());
+                        makeNewProgram[0] = false;
+                    }
+                });
+
+                alert.show();
+
+
+
+                try{
+                    Looper.loop();
+                }
+                catch (RuntimeException e) {}
+
+                boolean programNameNull = newName[0].equals(""); //new name not blank
+
+                if(!programNameNull) {
+
+
+                    if (makeNewProgram[0]) { //didn't cancel
+
+
+
+                        boolean programExists = false;
+
+                        for (int x = 0; x < fileNames.size(); x++) {
+                            if (fileNames.get(x).equals(newName[0])) {
+                                programExists = true;
+                            }
+                        }
+
+                        if (!programExists) { //ain't reusing an existing name
+                            FileOutputStream fos = null;
+                            fileNames.remove(position);
+                            fileNames.add(position, newName[0]); //add updated name to the list
+
+                            //save new list, now with new file name, with it at top of the list
+                            try {
+                                fos = openFileOutput("program_names.ms", MODE_PRIVATE);
+
+
+                                //write the test
+                                for(int x = 0; x < fileNames.size(); x++)
+                                {
+                                    String temp = fileNames.get(x);
+
+                                    fos.write(temp.getBytes());
+                                    fos.write(lineSeparator.getBytes());
+
+
+                                }
+
+
+                                //Toast.makeText(context, "Saved to " + getFilesDir() + "/" + myProgramName, Toast.LENGTH_LONG).show();
+
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            finally {
+                                if (fos != null)
+                                {
+                                    try {
+                                        fos.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+
+                            //write our code to the new filename
+
+                            fun.writeProgramToFile(newName[0],context,currentCode);
+                            MainAdapter.notifyItemChanged(position);
+                            File_names.clear();
+                            for(int x = 0; x < fileNames.size(); x++)
+                            {
+                                SavedItem temp = new SavedItem(fileNames.get(x));
+
+                                File_names.add(temp);
+                            }
+
+                            //load(); //load saved files names
+
+                            buildRecyclerView();
+
+                        } else {
+                            Toast toast = Toast.makeText(context, "A program with this name already exists.", Toast.LENGTH_LONG);
+                            toast.show();
+                        }
+
+                    }
+                }
+                else
+                {
+                    Toast toast = Toast.makeText(context, "Invalid program name.", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
+
+
+            @Override
             public void onDeleteClicked(int position) {
                 //String fileToDelete = File_names.get(position).getText();
                 ArrayList<String> FileNames = new ArrayList<>();
@@ -417,6 +561,8 @@ public class MainActivity extends AppCompatActivity {
                 File_names.remove(position);
                 MainAdapter.notifyItemRemoved(position);
             }
+
+
         });
 
     }
