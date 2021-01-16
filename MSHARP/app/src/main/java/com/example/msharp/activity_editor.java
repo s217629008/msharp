@@ -39,25 +39,25 @@ public class activity_editor extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+       //AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-        alert.setTitle("Save");
-        alert.setMessage("Would you like to save your work?");
+        //alert.setTitle("Save");
+        //alert.setMessage("Would you like to save your work?");
 
 
         // Set an EditText view to get user input
 
 
-        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(startIntent);
-            }
-        });
+        //alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+          //  @Override
+            //public void onClick(DialogInterface dialog, int which) {
+              //  Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+                //startActivity(startIntent);
+            //}
+        //});
 
-        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
+        //alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+         //   public void onClick(DialogInterface dialog, int whichButton) {
 
 
 
@@ -73,12 +73,12 @@ public class activity_editor extends AppCompatActivity {
                 startActivity(startIntent);
 
                 // Do something with value!
-            }
-        });
+         //   }
+       // });
 
 
 
-        alert.show();
+        //alert.show();
 
 
     }

@@ -67,7 +67,7 @@ public class AddExpression extends Expression{
                 break;
             case "-":
 
-                this.result = rhs - lhs;
+                this.result = lhs - rhs;
                 break;
         }
 
