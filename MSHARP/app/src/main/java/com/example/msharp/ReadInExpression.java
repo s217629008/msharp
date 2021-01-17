@@ -9,6 +9,9 @@ import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.view.Gravity;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 import java.io.Console;
@@ -74,7 +77,14 @@ public class ReadInExpression extends Expression
             }
         });
 
-        alert.show();
+        AlertDialog dialog = alert.create();
+        Window window = dialog.getWindow();
+        dialog.getWindow().setDimAmount(0f);
+        WindowManager.LayoutParams layoutParams=window.getAttributes();
+        layoutParams.gravity = Gravity.BOTTOM;
+        window.setAttributes(layoutParams);
+        dialog.show();
+       // alert.show();
 
         try{
             Looper.loop();

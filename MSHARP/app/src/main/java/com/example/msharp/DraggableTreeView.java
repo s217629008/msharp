@@ -10,9 +10,12 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -658,7 +661,14 @@ public class DraggableTreeView extends FrameLayout{
                                     }
                                 });
 
-                                alert4.show();
+                                AlertDialog dialog = alert4.create();
+                                Window window = dialog.getWindow();
+                                WindowManager.LayoutParams layoutParams=window.getAttributes();
+                                layoutParams.gravity = Gravity.BOTTOM;
+                                window.setAttributes(layoutParams);
+                                dialog.show();
+
+                                //alert4.show();
 
                                 break;
                             case 5:
