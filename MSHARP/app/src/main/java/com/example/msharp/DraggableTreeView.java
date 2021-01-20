@@ -532,6 +532,8 @@ public class DraggableTreeView extends FrameLayout{
                                     public void onClick(DialogInterface dialog, int whichButton) {
                                         String value = input2.getText().toString();
                                         String[] values = value.split(" ");
+                                        Functions fun = new Functions();
+                                        char[] chars = values[0].toCharArray();
                                         if(value.equals("")) //no argument
                                         {
                                             Toast toast=Toast.makeText(concon,"Invalid arguments",Toast.LENGTH_LONG);
@@ -544,13 +546,34 @@ public class DraggableTreeView extends FrameLayout{
                                         }
                                         else if(!values[1].equals("=")) //second argument was not '='
                                         {
-                                            Toast toast=Toast.makeText(concon,"Invalid arguments",Toast.LENGTH_LONG);
+                                            Toast toast=Toast.makeText(concon,"Invalid operator",Toast.LENGTH_LONG);
+                                            toast.show();
+                                        }
+                                        else if(fun.isBool(values[0]))
+                                        {
+                                            Toast toast=Toast.makeText(concon,"Invalid variable name",Toast.LENGTH_LONG);
+                                            toast.show();
+                                        }
+                                        else if(fun.isInteger(values[0]))
+                                        {
+                                            Toast toast=Toast.makeText(concon,"Invalid variable name",Toast.LENGTH_LONG);
+                                            toast.show();
+                                        }
+
+                                        else if (Character.isDigit(chars[0]))
+                                        {
+                                            Toast toast=Toast.makeText(concon,"Invalid variable name",Toast.LENGTH_LONG);
+                                            toast.show();
+                                        }
+                                        else if((values[0]).indexOf('#') != -1)
+                                        {
+                                            Toast toast=Toast.makeText(concon,"Invalid variable name",Toast.LENGTH_LONG);
                                             toast.show();
                                         }
                                         else {
 
 
-                                            Functions fun = new Functions();
+
 
                                             try {
                                                 fun.checkValidExpression(values[2]);

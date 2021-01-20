@@ -8,6 +8,7 @@ public class VariableFactor extends Factor {
     Map<String,Integer> Numbers;
     Map<String, String> Strings;
     Map<String, String> Bools;
+    public int type;
     /* Matt: add the maps, then have each result retuen from its respective map */
 
 
@@ -17,6 +18,7 @@ public class VariableFactor extends Factor {
         this.Bools = Bools;
         this.Numbers = Numbers;
         this.Strings = Strings;
+
     }
 
     @Override
@@ -25,13 +27,12 @@ public class VariableFactor extends Factor {
     }
 
     @Override
-    public void execute()
-    {
-
+    public void execute() throws Exception {
+        this.type = type();
     }
 
     @Override
-    public int type() {
+    public int type() throws Exception {
         if(Numbers.containsKey(variableName))
         {
             return 3;
@@ -49,9 +50,14 @@ public class VariableFactor extends Factor {
             return 4;
         }
 
-        else
+        if(Strings.containsKey(variableName))
         {
             return 7;
+        }
+        else
+        {
+            Exception e = new Exception("Undeclared variable");
+            throw e;
         }
 
     }

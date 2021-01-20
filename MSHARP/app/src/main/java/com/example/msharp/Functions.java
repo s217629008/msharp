@@ -50,12 +50,53 @@ public class Functions {
         }
     }
 
+    public boolean checkNoCodeUnchanged(ArrayList<String> loadedLines)
+    {
+        for(int x = 0; x < loadedLines.size(); x++)
+        {
+            String Tokens[] = loadedLines.get(x).split(" ");
+            for(int y = 0; y < Tokens.length; y++)
+            {
+                if(Tokens[y].equals("COND") || Tokens[y].equals("EXP") || Tokens[y].equals("VAR"))
+                {
+                    return false;
+                }
+            }
+
+        }
+        return true;
+    }
+
+   // public Map<Integer, String> ContextualAnalysis(Program program, )
+   // {
+
+   // }
 
     public boolean checkValidExpression (String input) throws Exception {
+
 
         if(isString(input))
         {
         return true;
+        }
+        if(isBool(input))
+        {
+            return true;
+        }
+        if(isInteger(input))
+        {
+            return true;
+        }
+        char[] chars = input.toCharArray();
+        if (Character.isDigit(chars[0]))
+        {
+            Exception o = new Exception("Variables cannot start with a number");
+            throw o;
+        }
+        if(input.indexOf('#') != -1)
+        {
+            Exception o = new Exception("Variables cannot contain '#' character");
+            throw o;
         }
         if(input.indexOf(' ') == -1) //its a variable
         {
@@ -148,28 +189,43 @@ public class Functions {
         return true;
     }
 
+    public boolean isValidVariable(String var) throws Exception {
+        char[] chars = var.toCharArray();
+        if (Character.isDigit(chars[0]))
+        {
+            Exception o = new Exception("Variables cannot start with a number");
+            throw o;
+        }
+        if(var.indexOf('#') != -1)
+        {
+            Exception o = new Exception("Variables cannot contain '#' character");
+            throw o;
+        }
+        return true;
+    }
+
     public boolean checkIsValidCondition(String input) throws Exception {
 
 
-        if(input.indexOf(' ') == -1) //its a variable
+
+
+
+
+
+
+        String[] expression = input.split(" ",3 );
+        if(expression.length != 3) //not able to split into Factor Operator Factor
         {
-            return true;
-        }
-        try{
-            String[] expression = input.split(" ",3 ); //is an expression with an operator
-        }
-        catch (Exception e)
-        {
-            Exception o = new Exception("Expressions with multiple terms must be of the form 'Factor Operator Factor'");
+            Exception o = new Exception("Conditions must be of the form 'Factor Operator Factor'");
             throw o;
         }
-        String[] expression = input.split(" ",3 );
 
         /* Is the left hand side of the expression an int or an existing variable? */
   /*      if(isExistingVariable(expression[0], Numbers, Strings, Bools))
         {
             lhs = new VariableFactor(expression[0]);
         }*/
+
 
 
         if(expression[2].indexOf(' ') != -1)
@@ -185,9 +241,10 @@ public class Functions {
                 Exception e = new Exception("Factor types must match.");
                 throw e;
             }
+
         }
 
-        if(isInteger(expression[0]))
+        else if(isInteger(expression[0]))
         {
             if(isBool(expression[2]))
             {
@@ -195,6 +252,17 @@ public class Functions {
                 throw e;
             }
         }
+        else
+        {
+            isValidVariable(expression[0]);
+
+        }
+        if(!isBool(expression[2]) && !isInteger(expression[2]))
+        {
+            isValidVariable(expression[2]);
+        }
+
+
 
         switch(expression[1])
         {

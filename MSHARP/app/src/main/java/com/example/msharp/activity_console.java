@@ -12,11 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -43,6 +45,16 @@ public class activity_console extends AppCompatActivity {
 
                 ArrayList<String> loadedLines = getIntent().getStringArrayListExtra("program");
 
+                Functions fun = new Functions();
+
+                if(!fun.checkNoCodeUnchanged(loadedLines))
+                {
+
+                    TextView textView = (TextView) findViewById(R.id.simpleTextView);
+                    textView.setText("Program still contains unchanged code blocks.");
+                    break;
+                }
+
                 TextView textView = (TextView) findViewById(R.id.simpleTextView);
                 textView.setText("");
                 //        textView.setText(""); //set text for text view
@@ -56,6 +68,8 @@ public class activity_console extends AppCompatActivity {
                 Boolean needToSkipIf = false;
                 Boolean needToSkipWhile = false;
 
+                int scopeWhile = 0;
+                int scopeIf = 0;
                 for(int x = 0; x < loadedLines.size(); x++)
                 {
 
@@ -68,18 +82,30 @@ public class activity_console extends AppCompatActivity {
                     }
                     if(Tokens[0].equals("ifEnd"))
                     {
-                        needToSkipIf = false;
+                        if(scopeIf == 0)
+                        {
+                            needToSkipIf = false;
+                        }
+                        scopeIf--;
                     }
                     if(Tokens[0].equals("whileEnd"))
                     {
-                        needToSkipWhile = false;
+                        if(scopeWhile == 0)
+                        {
+                            needToSkipWhile = false;
+                        }
+
+                        scopeWhile--;
+
                     }
                     if(Tokens[0].equals("if"))
                     {
+                        scopeIf++;
                         needToSkipIf = true;
                     }
                     if(Tokens[0].equals("while"))
                     {
+                        scopeWhile++;
                         needToSkipWhile = true;
                     }
                 }

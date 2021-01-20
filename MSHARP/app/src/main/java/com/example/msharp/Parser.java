@@ -439,9 +439,19 @@ public class Parser {
                     String codeBodyLineTokens[] = codeBodyLine.split(" ");
                     List<String> codeBody = new ArrayList<String>();
 
+
                     /* Get the code to be executed under the condition. */
-                    while(!codeBodyLineTokens[0].equals("ifEnd"))
+                    int ifCount = 0;
+                    while(!codeBodyLineTokens[0].equals("ifEnd") || ifCount != 0)
                     {
+                        if(codeBodyLineTokens[0].equals("if"))
+                        {
+                            ifCount++;
+                        }
+                        if(codeBodyLineTokens[0].equals("ifEnd"))
+                        {
+                            ifCount--;
+                        }
                         codeBody.add(codeBodyLine);
                         codeBodyLine = rawCode.get(currentLine + 1);
                         currentLine++;
@@ -543,8 +553,18 @@ public class Parser {
                     List<String> codeBody_while = new ArrayList<String>();
 
                     /* Get the code to be executed under the condition. */
-                    while(!codeBodyLineTokens_while[0].equals("whileEnd"))
+
+                    int whileCount = 0;
+                    while(!codeBodyLineTokens_while[0].equals("whileEnd") || whileCount != 0)
                     {
+                        if(codeBodyLineTokens_while[0].equals("while"))
+                        {
+                            whileCount++;
+                        }
+                        if(codeBodyLineTokens_while[0].equals("whileEnd"))
+                        {
+                            whileCount--;
+                        }
                         codeBody_while.add(codeBodyLine_while);
                         codeBodyLine_while = rawCode.get(currentLine + 1);
                         currentLine++;
@@ -554,6 +574,7 @@ public class Parser {
                     Program tempProgram_while = new Program();
                     Boolean needToSkipIf = false;
                     Boolean needToSkipWhile = false;
+
                     for(int x = 0; x < codeBody_while.size(); x++)
                     {
 
@@ -570,7 +591,9 @@ public class Parser {
                         }
                         if(tempTokens[0].equals("whileEnd"))
                         {
-                            needToSkipWhile = false;
+
+                                needToSkipWhile = false;
+
                         }
                         if(tempTokens[0].equals("if"))
                         {
@@ -579,6 +602,7 @@ public class Parser {
                         if(tempTokens[0].equals("while"))
                         {
                             needToSkipWhile = true;
+
                         }
 
 

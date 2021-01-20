@@ -92,6 +92,9 @@ public class AssignmentStatement extends Statement
                 }
                 Strings.put(variable, expression.resultString());
                 break;
+            default:
+                Exception e = new Exception("Attempting to access undeclared variable");
+                throw e;
 
 
 
