@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Parser {
-    TextView console;
+    TextView console; //The view the interpreter outputs to.
     Context context;
 
     public Parser(TextView console, Context context)
@@ -36,27 +36,49 @@ public class Parser {
         }
     }
 
-    /* Function to check if given input is an existing variable in any of the variable arrays. */
-    public static boolean isExistingVariable(String input, Map<String,Integer> Numbers, Map<String, String> Strings, Map<String, String> Bools)
+    /*Parse tokens for the lhs factor of an expression. */
+    public static Factor parseLHSFactor(String[] expression, Map<String, Integer> Numbers, Map<String, String> Strings, Map<String, String> Bools)
     {
-        if(Numbers.containsKey(input))
+        Factor factor;
+
+        if(isBool(expression[0]))
         {
-            return true;
+            factor = new BoolFactor(expression[0]);
         }
-        else if(Strings.containsKey(input))
+        else if(isInteger(expression[0]))
         {
-            return true;
-        }
-        else if(Bools.containsKey(input))
-        {
-            return true;
+            factor = new IntegerFactor(Integer.parseInt(expression[0]));
         }
         else
         {
-            return false;
+            factor = new VariableFactor(expression[0], Numbers, Strings, Bools);
         }
+
+        return factor;
     }
 
+    /*Parse tokens for the rhs factor of an expression. */
+    public static Factor parseRHSFactor(String[] expression, Map<String, Integer> Numbers, Map<String, String> Strings, Map<String, String> Bools)
+    {
+        Factor factor;
+
+        if(isBool(expression[2]))
+        {
+            factor = new BoolFactor(expression[2]);
+        }
+        else if(isInteger(expression[2]))
+        {
+            factor = new IntegerFactor(Integer.parseInt(expression[2]));
+        }
+        else
+        {
+            factor = new VariableFactor(expression[2], Numbers, Strings, Bools);
+        }
+
+        return factor;
+    }
+
+    /*Check to see if a token is an int. */
     public static boolean isInteger(String input)
     {
         try
@@ -70,6 +92,7 @@ public class Parser {
         }
     }
 
+    /*Check to see if a token is a bool. */
     public static boolean isBool(String input)
     {
         if(input.equals("true") || input.equals("false") || input.equals("!false") || input.equals("!true"))
@@ -82,6 +105,7 @@ public class Parser {
         }
     }
 
+    /*A check to see if an expression is a single factor or two factors with an operator. */
     public static boolean isExpressionWithOperator (String input)
     {
         String[] splitInput = input.split(" ",3 );
@@ -96,130 +120,21 @@ public class Parser {
 
     }
 
-    /* Function that takes a string and processes it into a condition. */
-    public static Expression processCondition (String input, Map<String, Integer> Numbers, Map<String, String> Strings, Map<String,String> Bools)
-    {
-
-        String[] expression = input.split(" ",3 );
-        Factor lhs;
-        Factor rhs;
-
-        /* Is the left hand side of the expression an int or an existing variable? */
-        /*
-        if(isExistingVariable(expression[2], Numbers, Strings, Bools))
-        {
-            rhs = new VariableFactor(expression[2]);
-        }
-        */
-        if(isBool(expression[0]))
-        {
-            lhs = new BoolFactor(expression[0]);
-        }
-        else if (isInteger(expression[0]))
-        {
-            lhs = new IntegerFactor(Integer.parseInt(expression[0]));
-        }
-        else
-        {
-            lhs = new VariableFactor(expression[0],Numbers, Strings, Bools);
-        }
-
-        /* Is the right hand side of the expression an int or an existing variable? */
-        /*
-        if(isExistingVariable(expression[2], Numbers, Strings, Bools))
-        {
-            rhs = new VariableFactor(expression[2]);
-        }
-        */
-
-        if(isBool(expression[2]))
-        {
-            rhs = new BoolFactor(expression[2]);
-        }
-        else if(isInteger(expression[2]))
-        {
-            rhs = new IntegerFactor(Integer.parseInt(expression[2]));
-        }
-        else
-        {
-            rhs = new VariableFactor(expression[2],Numbers, Strings, Bools);
-        }
-
-        switch(expression[1])
-        {
-            case "<":
-                RelationExpression newLT = new RelationExpression(lhs, "<",rhs, Numbers);
-                return  newLT;
-            case ">":
-                RelationExpression newGT = new RelationExpression(lhs, ">",rhs, Numbers);
-                return newGT;
-            case "<=":
-                RelationExpression newLTE = new RelationExpression(lhs,"<=",rhs, Numbers);
-                return newLTE;
-            case ">=":
-                RelationExpression newGTE = new RelationExpression(lhs,">=",rhs, Numbers);
-                return  newGTE;
-            case "==":
-                EqualExpression newEq = new EqualExpression(lhs, "==", rhs, Numbers, Strings, Bools);
-                return newEq;
-            case "!=":
-                EqualExpression newNe = new EqualExpression(lhs, "!=", rhs, Numbers, Strings, Bools);
-                return  newNe;
-            case "&&":
-                AndExpression newAa = new AndExpression(lhs, "&&", rhs, Bools);
-                return  newAa;
-            case "||":
-                AndExpression newOo = new AndExpression(lhs, "||", rhs, Bools);
-                return  newOo;
-        }
-        return null;
-    }
-
-    /* Function that takes a string and processes it into an expression. Expects: (Factor; Operator; Factor) */
+    /*Function that takes a string and processes it into an expression.  */
     public static Expression processExpression (String input,  Map<String, Integer> Numbers, Map<String, String> Strings, Map<String, String> Bools)
     {
 
         String[] expression = input.split(" ",3 );
         Factor lhs;
         Factor rhs;
+        String op = expression[1];
+        /*Parse lhs and rhs factors. */
+        lhs = parseLHSFactor(expression, Numbers, Strings, Bools);
 
-        /* Is the left hand side of the expression an int or an existing variable? */
-  /*      if(isExistingVariable(expression[0], Numbers, Strings, Bools))
-        {
-            lhs = new VariableFactor(expression[0]);
-        }*/
-        if(isBool(expression[0]))
-        {
-            lhs = new BoolFactor(expression[0]);
-        }
-        else if (isInteger(expression[0]))
-        {
-            lhs = new IntegerFactor(Integer.parseInt(expression[0]));
-        }
-        else
-        {
-            lhs = new VariableFactor(expression[0], Numbers, Strings, Bools);
-        }
+        rhs = parseRHSFactor(expression, Numbers, Strings, Bools);
 
-        /* Is the right hand side of the expression an int or an existing variable? */
-/*        if(isExistingVariable(expression[2], Numbers, Strings, Bools))
-        {
-            rhs = new VariableFactor(expression[2]);
-        }*/
-        if(isBool(expression[2]))
-        {
-            rhs = new BoolFactor(expression[2]);
-        }
-        else if(isInteger(expression[2]))
-        {
-            rhs = new IntegerFactor(Integer.parseInt(expression[2]));
-        }
-        else
-        {
-            rhs = new VariableFactor(expression[2], Numbers, Strings, Bools);
-        }
-
-        switch(expression[1])
+        /*Switch based on operator, parse the expression as the appropriate object. */
+        switch(op)
         {
             case "+":
                 AddExpression newAddExp = new AddExpression(lhs, "+",rhs, Numbers);
@@ -345,6 +260,7 @@ public class Parser {
                         ConsoleOutStatement newConsoleOutStatement_1 = new ConsoleOutStatement(newStringFactor, Numbers, Strings, Bools, console);
                         program.Add(newConsoleOutStatement_1);
                     }
+
                     /* Printing an int */
                     else if(isInteger(printAndExpression[1]))
                     {
@@ -352,6 +268,7 @@ public class Parser {
                         ConsoleOutStatement newConsoleOutStatement_2 = new ConsoleOutStatement(newIntegerFactor, Numbers, Strings, Bools, console);
                         program.Add(newConsoleOutStatement_2);
                     }
+
                     /* Printing a bool */
                     else if(isBool(printAndExpression[1]))
                     {
@@ -359,7 +276,6 @@ public class Parser {
                         ConsoleOutStatement newConsoleOutStatement_2_1 = new ConsoleOutStatement(newBoolFactor, Numbers, Strings, Bools, console);
                         program.Add(newConsoleOutStatement_2_1);
                     }
-                    /* Printing the value of an existing variable. */
 
                     /* Printing the evaluation of an expression. */
                     else if(isExpressionWithOperator(printAndExpression[1]))
@@ -368,7 +284,9 @@ public class Parser {
                         ConsoleOutStatement newConsoleOutStatement_4 = new ConsoleOutStatement(newExpression, Numbers, Strings, Bools, console);
                         program.Add(newConsoleOutStatement_4);
                     }
-                    else /* if(isExistingVariable(printAndExpression[1], Numbers, Strings, Bools)) */
+
+                    /* Printing the value of an existing variable. */
+                    else
                     {
                         VariableFactor newVariableFactor = new VariableFactor(printAndExpression[1], Numbers, Strings, Bools);
                         ConsoleOutStatement newConsoleOutStatement_3 = new ConsoleOutStatement(newVariableFactor, Numbers, Strings, Bools, console);
@@ -380,195 +298,149 @@ public class Parser {
                 /* If Statement */
                 case "if":
 
-                    String[] ifAndExpression = line.split(" ",2 );
-
+                    Factor ifLhs;
+                    Factor ifRhs;
+                    String ifOp = "";
                     int ifStart = currentLine + 1;
 
+                    /*We know this string can be parsed as expected, so we take off the "if":*/
+                    String[] ifAndExpression = line.split(" ",2 );
+
+                    /*Now we split the string into its 3 tokens. The lhs factor, operator and rhs factor. */
                     String[] expression = ifAndExpression[1].split(" ",3 );
-                    Factor lhs;
-                    Factor rhs;
-                    String op = "";
 
-                    /* Is the left hand side of the expression an int or an existing variable? */
-/*                    if(isExistingVariable(expression[0], Numbers, Strings, Bools))
-                    {
-                        lhs = new VariableFactor(expression[0]);
-                    }*/
-                    if(isBool(expression[0]))
-                    {
-                        lhs = new BoolFactor(expression[0]);
-                    }
-                    else if(isInteger(expression[0]))
-                    {
-                        lhs = new IntegerFactor(Integer.parseInt(expression[0]));
-                    }
-                    else
-                    {
-                        lhs = new VariableFactor(expression[0], Numbers, Strings, Bools);
-                    }
+                    /*Now we parse the tokens to retrieve our LHS and RHS factors, returning objects of type Factor.*/
+                    ifLhs = parseLHSFactor(expression, Numbers, Strings, Bools);
 
-                    /* Is the right hand side of the expression an int or an existing variable? */
-/*                    if(isExistingVariable(expression[2], Numbers, Strings, Bools))
-                    {
-                        rhs = new VariableFactor(expression[2]);
-                    }*/
-                    if(isBool(expression[2]))
-                    {
-                        rhs = new BoolFactor(expression[2]);
-                    }
-                    else if(isInteger(expression[2]))
-                    {
-                        rhs = new IntegerFactor(Integer.parseInt(expression[2]));
-                    }
-                    else
-                    {
-                        rhs = new VariableFactor(expression[2], Numbers, Strings, Bools);
-                    }
+                    ifRhs = parseRHSFactor(expression, Numbers, Strings, Bools);
 
-                    op = expression[1];
-                    //this gets the expression added
-                    //now for the code that follows
+                    /*Store a reference to the operator string for later. */
+                    ifOp = expression[1];
 
+                    /*Prep the variables needed to record the body of code that falls between the if statement and the ifEnd statement.*/
                     String codeBodyLine = rawCode.get(currentLine + 1);
                     currentLine++;
                     String codeBodyLineTokens[] = codeBodyLine.split(" ");
+                    /*Create a list for the lines of code to be stored in.*/
                     List<String> codeBody = new ArrayList<String>();
 
 
                     /* Get the code to be executed under the condition. */
-                    int ifCount = 0;
+                    int ifCount = 0; //Counter used for finding nested if's. if counter is incremented, we know the next ifEnd we find is not our ifEnd.
                     while(!codeBodyLineTokens[0].equals("ifEnd") || ifCount != 0)
                     {
-                        if(codeBodyLineTokens[0].equals("if"))
+                        if(codeBodyLineTokens[0].equals("if")) //Nested if statement found.
                         {
                             ifCount++;
                         }
-                        if(codeBodyLineTokens[0].equals("ifEnd"))
+                        if(codeBodyLineTokens[0].equals("ifEnd")) //End of nested if statement.
                         {
                             ifCount--;
                         }
-                        codeBody.add(codeBodyLine);
-                        codeBodyLine = rawCode.get(currentLine + 1);
-                        currentLine++;
-                        codeBodyLineTokens = codeBodyLine.split(" ");
+                        codeBody.add(codeBodyLine); //Add the line of code to our code body.
+                        codeBodyLine = rawCode.get(currentLine + 1); //get the next line.
+                        currentLine++; //increase current line so it doens't get parsed twice.
+                        codeBodyLineTokens = codeBodyLine.split(" "); //process line into its tokens, so we can check for "if" and "ifEnd" tokens.
                     }
 
-                    Program tempProgram = new Program();
-                    Boolean needToSkipIf_1 = false;
-                    Boolean needToSkipWhile_1 = false;
+                    /*The code within an if statement is parsed as a program. We now set up the variables we need to accomplish this.*/
+                    Program ifTempProgram = new Program();
+                    Boolean needToSkipIf_if = false;
+                    Boolean needToSkipWhile_if = false;
 
+                    /*Now we parse the body of code that falls between our "if" and "ifEnd". Nested statements will be parsed and take care of parsing their own respective code.*/
                     for(int x = 0; x < codeBody.size(); x++)
                     {
                         String temp = codeBody.get(x);
                         String[] tempTokens = temp.split(" ");
 
-                        if(!needToSkipIf_1 && !needToSkipWhile_1)
+                        /*These if statements determine if the code needs to be parsed by this "if", or if its part of a nested statement which will parse it itself.*/
+                        if(!needToSkipIf_if && !needToSkipWhile_if)
                         {
-                            ParseTokens(tempTokens, temp, Numbers, Strings, Bools, tempProgram, ifStart, rawCode);
+                            ParseTokens(tempTokens, temp, Numbers, Strings, Bools, ifTempProgram, currentLine, rawCode);
                         }
                         if(tempTokens[0].equals("ifEnd"))
                         {
-                            needToSkipIf_1 = false;
+                            needToSkipIf_if = false;
                         }
                         if(tempTokens[0].equals("whileEnd"))
                         {
-                            needToSkipWhile_1 = false;
+                            needToSkipWhile_if = false;
                         }
                         if(tempTokens[0].equals("if"))
                         {
-                            needToSkipIf_1 = true;
+                            needToSkipIf_if = true;
                         }
                         if(tempTokens[0].equals("while"))
                         {
-                            needToSkipWhile_1 = true;
+                            needToSkipWhile_if = true;
                         }
 
                     }
-
-                    IfStatement newIfStatement = new IfStatement(lhs, op, rhs, tempProgram.statements , currentLine, Numbers, Strings, Bools, this);
-
+                    /*Create new ifStatement object.*/
+                    IfStatement newIfStatement = new IfStatement(ifLhs, ifOp, ifRhs, ifTempProgram.statements , currentLine, Numbers, Strings, Bools, this);
+                    /*Add the new ifStatement to our AST*/
                     program.Add(newIfStatement);
-
                     break;
 
                 /* While statement */
                 case "while":
-                    String[] whileAndExpression = line.split(" ",2 );
 
+
+
+
+
+                    Factor whileLhs;
+                    Factor whileRhs;
+                    String whileOp = "";
                     int whileStart = currentLine + 1;
 
-                    String[] expression_2 = whileAndExpression[1].split(" ",3 );
-                    Factor lhs_2;
-                    Factor rhs_2;
-                    String op_2 = "";
+                    /*We know this string can be parsed as expected, so we take off the "while":*/
+                    String[] whileAndExpression = line.split(" ",2 );
 
-                    /* Is the left hand side of the expression an int or an existing variable? */
-/*                    if(isExistingVariable(expression_2[0], Numbers, Strings, Bools))
-                    {
-                        lhs_2 = new VariableFactor(expression_2[0]);
-                    }*/
-                    if(isBool(expression_2[0]))
-                    {
-                        lhs_2 = new BoolFactor(expression_2[0]);
-                    }
-                    else if(isInteger(expression_2[0]))
-                    {
-                        lhs_2 = new IntegerFactor(Integer.parseInt(expression_2[0]));
-                    }
-                    else
-                    {
-                        lhs_2 = new VariableFactor(expression_2[0], Numbers, Strings, Bools);
-                    }
+                    /*Now we split the string into its 3 tokens. The lhs factor, operator and rhs factor. */
+                    String[] whileExpression = whileAndExpression[1].split(" ",3 );
 
-                    /* Is the right hand side of the expression an int or an existing variable? */
-/*                    if(isExistingVariable(expression_2[2], Numbers, Strings, Bools))
-                    {
-                        rhs_2 = new VariableFactor(expression_2[2]);
-                    }*/
-                    if(isBool(expression_2[2]))
-                    {
-                        rhs_2 = new BoolFactor(expression_2[2]);
-                    }
-                    else if(isInteger(expression_2[2]))
-                    {
-                        rhs_2 = new IntegerFactor(Integer.parseInt(expression_2[2]));
-                    }
-                    else
-                    {
-                        rhs_2 = new VariableFactor(expression_2[2],Numbers, Strings, Bools);
-                    }
 
-                    op_2 = expression_2[1];
+                    /*Now we parse the tokens to retrieve our LHS and RHS factors, returning objects of type Factor.*/
+                    whileLhs = parseLHSFactor(whileExpression, Numbers, Strings, Bools);
 
-                    /* Initialize temp values for processing the code in the while statement. */
-                    //String codeBodyLine_while = scan.nextLine();
+                    whileRhs = parseRHSFactor(whileExpression, Numbers, Strings, Bools);
+
+                    /*Store a reference to the operator string for later. */
+                    whileOp = whileExpression[1];
+
+
+                    /*Prep the variables needed to record the body of code that falls between the while statement and the whileEnd statement.*/
+
                     String codeBodyLine_while = rawCode.get(currentLine + 1);
                     currentLine++;
                     String codeBodyLineTokens_while[] = codeBodyLine_while.split(" ");
                     List<String> codeBody_while = new ArrayList<String>();
 
                     /* Get the code to be executed under the condition. */
-
-                    int whileCount = 0;
+                    int whileCount = 0;//Counter used for finding nested while's. if counter is incremented, we know the next whileEnd we find is not our whileEnd.
                     while(!codeBodyLineTokens_while[0].equals("whileEnd") || whileCount != 0)
                     {
-                        if(codeBodyLineTokens_while[0].equals("while"))
+                        if(codeBodyLineTokens_while[0].equals("while"))//Nested while statement found.
                         {
                             whileCount++;
                         }
-                        if(codeBodyLineTokens_while[0].equals("whileEnd"))
+                        if(codeBodyLineTokens_while[0].equals("whileEnd"))//End of nested while statement.
                         {
                             whileCount--;
                         }
-                        codeBody_while.add(codeBodyLine_while);
-                        codeBodyLine_while = rawCode.get(currentLine + 1);
-                        currentLine++;
-                        codeBodyLineTokens_while = codeBodyLine_while.split(" ");
+                        codeBody_while.add(codeBodyLine_while); //Add the line of code to our code body.
+                        codeBodyLine_while = rawCode.get(currentLine + 1); //get the next line.
+                        currentLine++; //increase current line so it doens't get parsed twice.
+                        codeBodyLineTokens_while = codeBodyLine_while.split(" "); //process line into its tokens, so we can check for "while" and "whileEnd" tokens.
+
                     }
 
-                    Program tempProgram_while = new Program();
-                    Boolean needToSkipIf = false;
-                    Boolean needToSkipWhile = false;
+                    /*The code within an while statement is parsed as a program. We now set up the variables we need to accomplish this.*/
+                    Program whileTempProgram = new Program();
+                    Boolean needToSkipIf_while = false;
+                    Boolean needToSkipWhile_while = false;
 
                     for(int x = 0; x < codeBody_while.size(); x++)
                     {
@@ -576,119 +448,48 @@ public class Parser {
                         String temp = codeBody_while.get(x);
                         String[] tempTokens = temp.split(" ");
 
-                        if(!needToSkipIf && !needToSkipWhile)
+                        if(!needToSkipIf_while && !needToSkipWhile_while)
                         {
-                            ParseTokens(tempTokens, temp, Numbers, Strings, Bools, tempProgram_while, whileStart, rawCode);
+                            ParseTokens(tempTokens, temp, Numbers, Strings, Bools, whileTempProgram, currentLine, rawCode);
                         }
                         if(tempTokens[0].equals("ifEnd"))
                         {
-                            needToSkipIf = false;
+                            needToSkipIf_while = false;
                         }
                         if(tempTokens[0].equals("whileEnd"))
                         {
 
-                                needToSkipWhile = false;
+                            needToSkipWhile_while = false;
 
                         }
                         if(tempTokens[0].equals("if"))
                         {
-                            needToSkipIf = true;
+                            needToSkipIf_while = true;
                         }
                         if(tempTokens[0].equals("while"))
                         {
-                            needToSkipWhile = true;
+                            needToSkipWhile_while = true;
 
                         }
 
 
                     }
-
-                    WhileStatement newWhileStatement = new WhileStatement(lhs_2, op_2, rhs_2, tempProgram_while.statements, currentLine, Numbers, Strings, Bools, this);
+                    /*Create new whileStatement object.*/
+                    WhileStatement newWhileStatement = new WhileStatement(whileLhs, whileOp, whileRhs, whileTempProgram.statements, currentLine, Numbers, Strings, Bools, this);
+                    /*Add the new whileStatement to our AST*/
                     program.Add(newWhileStatement);
                     break;
-
-/*
-                case "for":     //for: x 1 to 10
-                    //print x
-                    //loopEnd
-
-                    if(!Numbers.containsKey(Tokens[1]) && !Strings.containsKey(Tokens[1]))
-                    {
-                        Numbers.put(Tokens[1], Integer.parseInt(Tokens[2]));
-
-                        int loopCnt = Integer.parseInt(Tokens[4]);
-                        int loopStart = Integer.parseInt(Tokens[2]);
-
-                        String loopLine =  "";
-                        String loopLineTonkens[] = loopLine.split(" ");
-                        List<String> loopLines = new ArrayList<String>();
-                        while(!loopLineTonkens[0].equals("loopEnd"))
-                        {
-                            loopLine = scan.nextLine();
-                            loopLines.add(loopLine);
-                            loopLineTonkens = loopLine.split(" ");
-                        }
-                        for (int x = loopStart; x < loopCnt + 1; x++)
-                        {
-                            for (int y = 0; y < loopLines.size(); y++)
-                            {
-                                Numbers.replace(Tokens[1], x);
-                                String lineToProcess = loopLines.get(y);
-                                String lineToProcessTokens[] = lineToProcess.split(" ");
-                                ParseTokens(lineToProcessTokens, lineToProcess, scan, Numbers, Strings, program);
-                            }
-                        }
-                        break;
-                    }
-                    else
-                    {
-                        System.out.println(Tokens[1] + " is already a declared identifier.");
-                    }
-
-
-                case "loop":        //outdated loop code: loop 10 -> repeats loop 10 times
-                    int loopCnt;
-                    try
-                    {
-                        loopCnt = Integer.parseInt(Tokens[1]);
-                    }
-                    catch (NumberFormatException e)
-                    {
-                        loopCnt = Numbers.get(Tokens[1]);
-                    }
-
-                    String loopLine =  "";
-                    String loopLineTonkens[] = loopLine.split(" ");
-                    List<String> loopLines = new ArrayList<String>();
-                    while(!loopLineTonkens[0].equals("fin"))
-                    {
-                        loopLine = scan.nextLine();
-                        loopLines.add(loopLine);
-                        loopLineTonkens = loopLine.split(" ");
-                    }
-                    for (int x = 0; x < loopCnt; x++)
-                    {
-                        for (int y = 0; y < loopLines.size(); y++)
-                        {
-                            String lineToProcess = loopLines.get(y);
-                            String lineToProcessTokens[] = lineToProcess.split(" ");
-                            ParseTokens(lineToProcessTokens, lineToProcess, scan, Numbers, Strings, program);
-                        }
-                    }
-                    break;
-*/
 
                 case "":
                     break;
 
-
-
-
                 default:
-                    //System.out.println("Ok, you got me, I have no idea what code you put here on line");
+                    /* Can't get here */
 
             }
         }
+
+
 
 
 }
