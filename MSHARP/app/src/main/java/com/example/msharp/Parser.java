@@ -377,11 +377,6 @@ public class Parser {
                     break;
 
 
-                case "array":
-
-
-                    break;
-
                 /* If Statement */
                 case "if":
 
