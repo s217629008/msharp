@@ -1,6 +1,5 @@
 package com.example.msharp;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
+public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapter.MyViewHolder>{
     private ArrayList<SavedItem> myList;
     private OnItemClickListener myListener;
 
@@ -88,7 +86,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
 
     }
 
-    public MyAdapter(ArrayList<SavedItem> List) {
+    public MainActivityAdapter(ArrayList<SavedItem> List) {
         myList = List;
     }
 

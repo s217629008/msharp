@@ -1,5 +1,6 @@
 package com.example.msharp;
 
+/*Integer factor. */
 public class IntegerFactor extends Factor {
 
     int element;

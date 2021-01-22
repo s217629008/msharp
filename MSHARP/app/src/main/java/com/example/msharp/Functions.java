@@ -50,6 +50,7 @@ public class Functions {
         }
     }
 
+    /*Function to check if any code blocks still have their placeholder values. */
     public boolean checkNoCodeUnchanged(ArrayList<String> loadedLines)
     {
         for(int x = 0; x < loadedLines.size(); x++)
@@ -67,11 +68,8 @@ public class Functions {
         return true;
     }
 
-   // public Map<Integer, String> ContextualAnalysis(Program program, )
-   // {
 
-   // }
-
+    /*Check a string can be parsed as a valid expression. Do a local contextual analysis.*/
     public boolean checkValidExpression (String input) throws Exception {
 
 
@@ -113,11 +111,6 @@ public class Functions {
         String[] expression = input.split(" ",3 );
 
         /* Is the left hand side of the expression an int or an existing variable? */
-  /*      if(isExistingVariable(expression[0], Numbers, Strings, Bools))
-        {
-            lhs = new VariableFactor(expression[0]);
-        }*/
-
 
         if(expression[2].indexOf(' ') != -1)
         {
@@ -204,14 +197,8 @@ public class Functions {
         return true;
     }
 
+    /*Check a string can be parsed as a valid condition. Do a local contextual analysis.*/
     public boolean checkIsValidCondition(String input) throws Exception {
-
-
-
-
-
-
-
 
         String[] expression = input.split(" ",3 );
         if(expression.length != 3) //not able to split into Factor Operator Factor
@@ -219,14 +206,6 @@ public class Functions {
             Exception o = new Exception("Conditions must be of the form 'Factor Operator Factor'");
             throw o;
         }
-
-        /* Is the left hand side of the expression an int or an existing variable? */
-  /*      if(isExistingVariable(expression[0], Numbers, Strings, Bools))
-        {
-            lhs = new VariableFactor(expression[0]);
-        }*/
-
-
 
         if(expression[2].indexOf(' ') != -1)
         {
@@ -329,55 +308,7 @@ public class Functions {
         }
     }
 
-    public boolean isExpressionWithOperator (String input)
-    {
-        String[] splitInput = input.split(" ",3 );
-        if(splitInput.length == 3)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-
-    }
-
-    public static boolean isNotted(String input)
-    {
-        char[] allChars = input.toCharArray();
-        if(allChars[0] == '!')
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public static boolean isExistingBoolVariable(String input,  Map<String, String> Bools)
-    {
-        if(Bools.containsKey(input))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    public static boolean isExistingIntVariable(String input,  Map<String, Integer> Numbers)
-    {
-        if(Numbers.containsKey(input))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    /*Take in a program from the editor, format it into a format to be saved. */
     public void getPrintLines(ArrayList<String> output, TreeNode root)
     {
         ArrayList<TreeNode> childs = root.getChildren();
@@ -401,6 +332,8 @@ public class Functions {
             }
         }
     }
+
+    /*Load the names of all the saved files. */
     public ArrayList<String> loadFileNamesToArray(Context context)
     {
         ArrayList<String> fileNames = new ArrayList<>();
@@ -432,6 +365,7 @@ public class Functions {
         return fileNames;
     }
 
+    /*Save a new file to the list of saved files. */
     public void saveFileNamesWithNewFile( String myProgramName,Context context, ArrayList<String> fileNames)
     {
         FileOutputStream fos = null;
@@ -469,6 +403,7 @@ public class Functions {
         }
     }
 
+    /*Load a files code into an array that can be used by M#. */
     public ArrayList<String> loadCodeIntoArrayFromFile(String programName, Context context) {
         ArrayList<String> loadedCode = new ArrayList<>();
         try {
@@ -500,6 +435,7 @@ public class Functions {
 
 }
 
+    /*Write a program to a file to be retrieved later. Takes in TreeNode */
     public void writeProgramToFile(String myProgramName, Context context, TreeNode root)
     {
         String lineSeparator = System.getProperty("line.separator");
@@ -535,6 +471,7 @@ public class Functions {
         }
     }
 
+    /*Write a program to a file to be retrieved later. Takes in ArrayList */
     public void writeProgramToFile(String myProgramName, Context context, ArrayList<String> code) //overload that takes arraylist instead of treenode
     {
         String lineSeparator = System.getProperty("line.separator");

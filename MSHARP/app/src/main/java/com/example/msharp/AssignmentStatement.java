@@ -11,6 +11,7 @@ public class AssignmentStatement extends Statement
     public Map<String, String> Strings;
     public Map<String, String> Bools;
 
+    /*Statement that assigns a value to a variable. */
     public AssignmentStatement(String variable, Expression expression, Map<String,Integer> Numbers, Map<String, String> Strings, Map<String, String> Bools)
     {
         this.variable = variable;
@@ -20,12 +21,28 @@ public class AssignmentStatement extends Statement
         this.Numbers = Numbers;
     }
 
+    /*Remove a variable from all memory maps. */
+    public void removeVariable()
+    {
+        if(Numbers.containsKey(variable))
+        {
+            Numbers.remove(variable);
+        }
+        if(Bools.containsKey(variable))
+        {
+            Bools.remove(variable);
+        }
+        if(Strings.containsKey(variable))
+        {
+            Strings.remove(variable);
+        }
+    }
 
 
+    /*Assign a value to a variable. */
     @Override
     public void execute() throws Exception {
         Functions fun = new Functions();
-        //boolean replacingVar = fun.isExistingVariable(variable, Numbers, Strings, Bools);
         /*
         type 0 = addExp
         type 1 = andExp
@@ -37,66 +54,32 @@ public class AssignmentStatement extends Statement
         type 7 = stringFact
         type 8 = varFact
         */
+        /*Evaluate result of the expression. */
         expression.execute();
 
+        /*Switch based on expression type. */
         switch (expression.type())
         {
             case 0:
             case 3:
             case 6:
-                if(Numbers.containsKey(variable))
-                {
-                    Numbers.remove(variable);
-                }
-                if(Bools.containsKey(variable))
-                {
-                    Bools.remove(variable);
-                }
-                if(Strings.containsKey(variable))
-                {
-                    Strings.remove(variable);
-                }
-
-                Numbers.put(variable, expression.resultInt());
+                removeVariable();
+                Numbers.put(variable, expression.resultInt()); //Its a number.
                 break;
             case 1:
             case 2:
             case 4:
             case 5:
-                if(Numbers.containsKey(variable))
-                {
-                    Numbers.remove(variable);
-                }
-                if(Bools.containsKey(variable))
-                {
-                    Bools.remove(variable);
-                }
-                if(Strings.containsKey(variable))
-                {
-                    Strings.remove(variable);
-                }
-                Bools.put(variable, expression.resultBool());
+                removeVariable();
+                Bools.put(variable, expression.resultBool()); //Its a bool
                 break;
             case 7:
-                if(Numbers.containsKey(variable))
-                {
-                    Numbers.remove(variable);
-                }
-                if(Bools.containsKey(variable))
-                {
-                    Bools.remove(variable);
-                }
-                if(Strings.containsKey(variable))
-                {
-                    Strings.remove(variable);
-                }
-                Strings.put(variable, expression.resultString());
+                removeVariable();
+                Strings.put(variable, expression.resultString()); //its a string
                 break;
             default:
                 Exception e = new Exception("Attempting to access undeclared variable");
                 throw e;
-
-
 
         }
 

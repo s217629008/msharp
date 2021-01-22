@@ -10,10 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity_console"
+            android:name=".ConsoleActivity"
             android:label="@string/title_activity_console"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".activity_editor" />
+        <activity android:name=".EditorActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

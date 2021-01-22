@@ -30,6 +30,8 @@ import java.util.Map;
  * Created by jbonk on 6/16/2017.
  */
 
+/*The library I used for the main editor UI. My changes appear between lines ~456 -> ~750*/
+
 public class DraggableTreeView extends FrameLayout{
 
     ScrollView mRootLayout;
@@ -56,11 +58,6 @@ public class DraggableTreeView extends FrameLayout{
     public int maxLevels = -1;
     public boolean makeSiblingAtMaxLevel = true;
     //public MyKeyboard keyboard = null;
-
-    public static Map<String, String> TempStrings = new Hashtable();
-    public static Map<String, Integer> TempNumbers = new Hashtable();
-    public static Map<String, String> TempBools = new Hashtable();
-
 
     private View mobileView;
     private boolean mCellIsMobile = false;
@@ -464,9 +461,10 @@ public class DraggableTreeView extends FrameLayout{
                     long lastDuration = System.currentTimeMillis() - lastDown;
                     if (lastDuration < 200)
                     {
-
+                        /*Handles events when click on a code block. */
                         switch (node.type)
                         {
+                            //Click on an if block. Ask for input.
                             case 1:
                                 AlertDialog.Builder alert = new AlertDialog.Builder(concon);
 
@@ -482,7 +480,7 @@ public class DraggableTreeView extends FrameLayout{
                                         String value = input.getText().toString();
 
                                             Functions fun = new Functions();
-                                        if(value.equals("")) //no argument
+                                        if(value.equals("")) //no argument, reject.
                                         {
                                             Toast toast=Toast.makeText(concon,"Invalid arguments",Toast.LENGTH_LONG);
                                             toast.show();
@@ -490,7 +488,10 @@ public class DraggableTreeView extends FrameLayout{
                                         else
                                         {
 
-
+                                        /*This is where the input is checked before it is allowed to be updated to the code block.
+                                          Scans the input into its tokens, then checks if it is parsable as a condition. If it is, it is accepted, otherwise it is rejected with an error
+                                          in the editor.
+                                        */
                                         try {
                                             fun.checkIsValidCondition(value);
                                             node.data = "if " + value;
@@ -505,7 +506,7 @@ public class DraggableTreeView extends FrameLayout{
                                         }
 
 
-                                        // Do something with value!
+
                                     }
                                 });
 
@@ -518,6 +519,8 @@ public class DraggableTreeView extends FrameLayout{
                                 alert.show();
 
                                 break;
+
+                                /*Let block clicked*/
                             case 2:
                                 AlertDialog.Builder alert2 = new AlertDialog.Builder(concon);
 
@@ -528,6 +531,7 @@ public class DraggableTreeView extends FrameLayout{
                                 final EditText input2 = new EditText(concon);
                                 alert2.setView(input2);
 
+                                /*Input is now checked*/
                                 alert2.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int whichButton) {
                                         String value = input2.getText().toString();
@@ -549,12 +553,12 @@ public class DraggableTreeView extends FrameLayout{
                                             Toast toast=Toast.makeText(concon,"Invalid operator",Toast.LENGTH_LONG);
                                             toast.show();
                                         }
-                                        else if(fun.isBool(values[0]))
+                                        else if(fun.isBool(values[0])) //cant be a bool
                                         {
                                             Toast toast=Toast.makeText(concon,"Invalid variable name",Toast.LENGTH_LONG);
                                             toast.show();
                                         }
-                                        else if(fun.isInteger(values[0]))
+                                        else if(fun.isInteger(values[0])) //cant be an int
                                         {
                                             Toast toast=Toast.makeText(concon,"Invalid variable name",Toast.LENGTH_LONG);
                                             toast.show();
@@ -603,6 +607,8 @@ public class DraggableTreeView extends FrameLayout{
                                 alert2.show();
 
                                 break;
+
+                                /*While code block clicked.*/
                             case 3:
                                 AlertDialog.Builder alert3 = new AlertDialog.Builder(concon);
 
@@ -614,6 +620,7 @@ public class DraggableTreeView extends FrameLayout{
 
                                 alert3.setView(input3);
 
+                                /*Check its a valid input. */
                                 alert3.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int whichButton) {
                                         String value = input3.getText().toString();
@@ -628,7 +635,7 @@ public class DraggableTreeView extends FrameLayout{
 
                                         Functions fun = new Functions();
                                         try {
-                                            fun.checkIsValidCondition(value);
+                                            fun.checkIsValidCondition(value); //check is a valid condition.
                                             node.data = "while " + value;
 
                                             adapter.setTreeViews();
@@ -655,6 +662,8 @@ public class DraggableTreeView extends FrameLayout{
 
 
                                 break;
+
+                                /*Special case where a variable is assigned read.*/
                             case 4:
                                 AlertDialog.Builder alert4 = new AlertDialog.Builder(concon);
 
@@ -664,7 +673,7 @@ public class DraggableTreeView extends FrameLayout{
                                 // Set an EditText view to get user input
                                 final EditText input4 = new EditText(concon);
                                 alert4.setView(input4);
-
+                                /*get input from user, set it as a variable. */
                                 alert4.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int whichButton) {
                                         String value = input4.getText().toString();
@@ -694,6 +703,8 @@ public class DraggableTreeView extends FrameLayout{
                                 //alert4.show();
 
                                 break;
+
+                                /*print code block clicked. */
                             case 5:
                                 AlertDialog.Builder alert5 = new AlertDialog.Builder(concon);
 
@@ -718,7 +729,7 @@ public class DraggableTreeView extends FrameLayout{
 
                                         Functions fun = new Functions();
                                         try {
-                                            fun.checkValidExpression(value);
+                                            fun.checkValidExpression(value); //check is a valid expression trying to be printed.
                                             node.data = "print " + value;
 
                                             adapter.setTreeViews();

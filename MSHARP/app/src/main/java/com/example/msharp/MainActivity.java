@@ -14,7 +14,6 @@ import android.os.Message;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -23,17 +22,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -41,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
     private RecyclerView MainRecyclerView;
-    private MyAdapter MainAdapter;
+    private MainActivityAdapter MainAdapter;
     private RecyclerView.LayoutManager MainLayoutManager;
     private static final String FILE_NAME = "test.txt";
     public ArrayList<SavedItem> File_names = new ArrayList<>();
@@ -138,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                                 Bundle n = new Bundle();
                                 n.putIntegerArrayList("newFile", newFile);
 
-                                Intent startIntent = new Intent(getApplicationContext(), activity_editor.class);
+                                Intent startIntent = new Intent(getApplicationContext(), EditorActivity.class);
                                 startIntent.putExtras(b);
                                 startIntent.putExtras(n);
                                 startActivity(startIntent);
@@ -338,18 +333,18 @@ public class MainActivity extends AppCompatActivity {
         MainRecyclerView = findViewById(R.id.recyclerView);
         //MainRecyclerView.setHasFixedSize(true);
         MainLayoutManager = new LinearLayoutManager(this);
-        MainAdapter = new MyAdapter(File_names);
+        MainAdapter = new MainActivityAdapter(File_names);
         MainRecyclerView.setLayoutManager(MainLayoutManager);
         MainRecyclerView.setAdapter(MainAdapter);
 
-        MainAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
+        MainAdapter.setOnItemClickListener(new MainActivityAdapter.OnItemClickListener() {
             @Override
             public void onItemClicked(int position) {
                 ArrayList<String> programName = new ArrayList<String>();
                 programName.add(File_names.get(position).getText());
                 Bundle b = new Bundle();
                 b.putStringArrayList("programName", programName);
-                Intent startIntent = new Intent(getApplicationContext(), activity_editor.class);
+                Intent startIntent = new Intent(getApplicationContext(), EditorActivity.class);
                 startIntent.putExtras(b);
                 startActivity(startIntent);
             }

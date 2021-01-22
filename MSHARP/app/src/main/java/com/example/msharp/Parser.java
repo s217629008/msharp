@@ -187,8 +187,7 @@ public class Parser {
     }
 
     /* The parser. Reads raw code and transforms it into an AST. */
-    public void ParseTokens(String Tokens[], String line, Map<String, Integer> Numbers, Map<String, String> Strings, Map<String, String> Bools, Program program, int currentLine, ArrayList<String> rawCode)
-    {
+    public void ParseTokens(String Tokens[], String line, Map<String, Integer> Numbers, Map<String, String> Strings, Map<String, String> Bools, Program program, int currentLine, ArrayList<String> rawCode) throws Exception {
             /* Tokens[0] is the first token on a line of code.
             It tells the parser what type of statement to expect. */
             switch (Tokens[0])
@@ -318,7 +317,17 @@ public class Parser {
                     ifOp = expression[1];
 
                     /*Prep the variables needed to record the body of code that falls between the if statement and the ifEnd statement.*/
-                    String codeBodyLine = rawCode.get(currentLine + 1);
+                    String codeBodyLine;
+                    /*Catch unclosed scope errors*/
+                    try
+                    {
+                        codeBodyLine = rawCode.get(currentLine + 1); //Get the next line
+                    }
+                    catch(IndexOutOfBoundsException e)
+                    {
+                        Exception ex = new Exception("Unclosed scope");
+                        throw ex;
+                    }
                     currentLine++;
                     String codeBodyLineTokens[] = codeBodyLine.split(" ");
                     /*Create a list for the lines of code to be stored in.*/
@@ -338,7 +347,17 @@ public class Parser {
                             ifCount--;
                         }
                         codeBody.add(codeBodyLine); //Add the line of code to our code body.
-                        codeBodyLine = rawCode.get(currentLine + 1); //get the next line.
+                        /*Catch unclosed scope errors*/
+                        try
+                        {
+                            codeBodyLine = rawCode.get(currentLine + 1); //get the next line.
+                        }
+
+                            catch(IndexOutOfBoundsException e)
+                        {
+                            Exception ex = new Exception("Unclosed scope");
+                            throw ex;
+                        }
                         currentLine++; //increase current line so it doens't get parsed twice.
                         codeBodyLineTokens = codeBodyLine.split(" "); //process line into its tokens, so we can check for "if" and "ifEnd" tokens.
                     }
@@ -357,7 +376,7 @@ public class Parser {
                         /*These if statements determine if the code needs to be parsed by this "if", or if its part of a nested statement which will parse it itself.*/
                         if(!needToSkipIf_if && !needToSkipWhile_if)
                         {
-                            ParseTokens(tempTokens, temp, Numbers, Strings, Bools, ifTempProgram, currentLine, rawCode);
+                            ParseTokens(tempTokens, temp, Numbers, Strings, Bools, ifTempProgram, ifStart + x, rawCode);
                         }
                         if(tempTokens[0].equals("ifEnd"))
                         {
@@ -386,10 +405,6 @@ public class Parser {
                 /* While statement */
                 case "while":
 
-
-
-
-
                     Factor whileLhs;
                     Factor whileRhs;
                     String whileOp = "";
@@ -413,7 +428,17 @@ public class Parser {
 
                     /*Prep the variables needed to record the body of code that falls between the while statement and the whileEnd statement.*/
 
-                    String codeBodyLine_while = rawCode.get(currentLine + 1);
+                    String codeBodyLine_while;
+
+                    try {
+                        codeBodyLine_while = rawCode.get(currentLine + 1); //get the next line.
+                    }
+                    catch(IndexOutOfBoundsException e)
+                    {
+                        Exception ex = new Exception("Unclosed scope");
+                        throw ex;
+                    }
+
                     currentLine++;
                     String codeBodyLineTokens_while[] = codeBodyLine_while.split(" ");
                     List<String> codeBody_while = new ArrayList<String>();
@@ -431,7 +456,14 @@ public class Parser {
                             whileCount--;
                         }
                         codeBody_while.add(codeBodyLine_while); //Add the line of code to our code body.
-                        codeBodyLine_while = rawCode.get(currentLine + 1); //get the next line.
+                        try {
+                            codeBodyLine_while = rawCode.get(currentLine + 1); //get the next line.
+                        }
+                        catch(IndexOutOfBoundsException e)
+                        {
+                            Exception ex = new Exception("Unclosed scope");
+                            throw ex;
+                        }
                         currentLine++; //increase current line so it doens't get parsed twice.
                         codeBodyLineTokens_while = codeBodyLine_while.split(" "); //process line into its tokens, so we can check for "while" and "whileEnd" tokens.
 
@@ -450,7 +482,7 @@ public class Parser {
 
                         if(!needToSkipIf_while && !needToSkipWhile_while)
                         {
-                            ParseTokens(tempTokens, temp, Numbers, Strings, Bools, whileTempProgram, currentLine, rawCode);
+                            ParseTokens(tempTokens, temp, Numbers, Strings, Bools, whileTempProgram, whileStart + x, rawCode);
                         }
                         if(tempTokens[0].equals("ifEnd"))
                         {

@@ -25,17 +25,18 @@ public class RelationExpression extends Expression{
 
 
 
-
+    /*Get the values of the lhs and rhs and apply them based on the operator. */
     @Override
     public void execute() throws Exception {
         Functions fun = new Functions();
         int rhs;
         int lhs;
-        if(fun.isInteger(this.leftHandSide.rawInput()))
+        /*Evaluate LHS factor. */
+        if(fun.isInteger(this.leftHandSide.rawInput())) //is it an int?
         {
             lhs = Integer.parseInt(leftHandSide.rawInput());
         }
-        else if(Numbers.containsKey(leftHandSide.rawInput()))
+        else if(Numbers.containsKey(leftHandSide.rawInput())) //is it a var?
         {
             lhs = Numbers.get(leftHandSide.rawInput());
         }
@@ -44,11 +45,12 @@ public class RelationExpression extends Expression{
             Exception e = new Exception("Variable does not exist ");
             throw e;
         }
-        if(fun.isInteger(this.rightHandSide.rawInput()))
+        /*Evaluate RHS factor. */
+        if(fun.isInteger(this.rightHandSide.rawInput())) //is it an int?
         {
             rhs = Integer.parseInt(rightHandSide.rawInput());
         }
-        else if(Numbers.containsKey(rightHandSide.rawInput()))
+        else if(Numbers.containsKey(rightHandSide.rawInput())) //is it a var?
         {
             rhs = Numbers.get(rightHandSide.rawInput());
         }
@@ -58,6 +60,7 @@ public class RelationExpression extends Expression{
             throw e;
         }
 
+        /*Evaluate expression based on operator. */
         switch(operator)
         {
             case ">":
@@ -83,6 +86,7 @@ public class RelationExpression extends Expression{
 
     }
 
+    /*Get type of expression. */
     @Override
     public int type() {
         return 4;
@@ -93,6 +97,7 @@ public class RelationExpression extends Expression{
         return 0;
     }
 
+    /*Based on its type, will be asked for its result. In this case, bool result. */
     @Override
     public String resultBool() {
         if(result){

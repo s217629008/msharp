@@ -5,48 +5,45 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class activity_console extends AppCompatActivity {
-
+/*
+The console activity. An array of raw but syntactically correct code is given to it by the editor activity.
+It is responsible for then parsing the code, building the AST and executing it.
+ */
+public class ConsoleActivity extends AppCompatActivity {
+    /*Initalize the variable arrays for the program to make use of. */
     public static Map<String, String> Strings = new Hashtable();
     public static Map<String, Integer> Numbers = new Hashtable();
     public static Map<String, String> Bools = new Hashtable();
     public int lineCount = 1;
-    Context concon = activity_console.this;
+    Context context = ConsoleActivity.this;
 
+    /*Controls what happens when the play icon is pressed. */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId())
         {
             case R.id.play_code:
 
+                /*Retrieve the code from the editor activity. */
                 ArrayList<String> loadedLines = getIntent().getStringArrayListExtra("program");
 
                 Functions fun = new Functions();
 
+                /*First check no code blocks were left unchanged from their default state. The one major error that can't be caught in the editor. */
                 if(!fun.checkNoCodeUnchanged(loadedLines))
                 {
 
@@ -55,47 +52,61 @@ public class activity_console extends AppCompatActivity {
                     break;
                 }
 
+                /*Get the textview the code will print outputs to, reset it to blank. */
                 TextView textView = (TextView) findViewById(R.id.simpleTextView);
                 textView.setText("");
-                //        textView.setText(""); //set text for text view
+
 
                 /*  Initialize parser */
-                Parser parser = new Parser(textView, concon);
+                Parser parser = new Parser(textView, context);
 
                 /* Initialize new AST for the program */
                 Program program = new Program();
 
+                /*Bools to govern if code needs to be parsed by this function, or if they are parsed by an if or while statement. */
                 Boolean needToSkipIf = false;
                 Boolean needToSkipWhile = false;
 
+                /*Initalize scope tracking ints*/
                 int scopeWhile = 0;
                 int scopeIf = 0;
+
+                /*Parse the program, costruct an AST. */
                 for(int x = 0; x < loadedLines.size(); x++)
                 {
-
                     String line = loadedLines.get(x);
                     String Tokens[] = line.split(" ");
 
                     if(!needToSkipIf && !needToSkipWhile)
                     {
-                        parser.ParseTokens(Tokens, line, Numbers, Strings, Bools, program, x, loadedLines);
+                        try
+                        {
+                            parser.ParseTokens(Tokens, line, Numbers, Strings, Bools, program, x, loadedLines);
+                        }
+                        catch (Exception e)
+                        {
+                            /*The one other error that cant be caught in the editor is if an if/while scope is opened but never closed.
+                              They are caught here. */
+                            textView.setText(e.getMessage());
+                            break;
+                        }
                     }
                     if(Tokens[0].equals("ifEnd"))
                     {
+                        scopeIf--;
                         if(scopeIf == 0)
                         {
                             needToSkipIf = false;
                         }
-                        scopeIf--;
+
                     }
                     if(Tokens[0].equals("whileEnd"))
                     {
+                        scopeWhile--;
                         if(scopeWhile == 0)
                         {
                             needToSkipWhile = false;
                         }
-
-                        scopeWhile--;
 
                     }
                     if(Tokens[0].equals("if"))
@@ -109,6 +120,7 @@ public class activity_console extends AppCompatActivity {
                         needToSkipWhile = true;
                     }
                 }
+                /*The program has been parsed, now it is run. */
                 program.Run(textView);
                 break;
 
@@ -116,6 +128,8 @@ public class activity_console extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    /*Admin for the top task bar */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -123,6 +137,7 @@ public class activity_console extends AppCompatActivity {
         return true;
     }
 
+    /*On creation admin for the app to know what is where. */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,19 +146,13 @@ public class activity_console extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Console");
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_backarror);
-
-
-
         BottomNavigationView botNav = findViewById(R.id.bottom_navigation);
         botNav.setOnNavigationItemSelectedListener(navListener);
         botNav.getMenu().getItem(0).setChecked(false);
         botNav.getMenu().getItem(1).setChecked(true);
-
-        ArrayList<String> FileNames = new ArrayList<>();
-
-
     }
 
+    /*Functionality to move to the code editor when it is pressed in the navigation bar. */
     private BottomNavigationView.OnNavigationItemSelectedListener navListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
@@ -159,7 +168,7 @@ public class activity_console extends AppCompatActivity {
                             Bundle b = new Bundle();
                             b.putStringArrayList("programName", programName);
 
-                            Intent startIntent = new Intent(getApplicationContext(), activity_editor.class);
+                            Intent startIntent = new Intent(getApplicationContext(), EditorActivity.class);
                             startIntent.putExtras(b);
                             startActivity(startIntent);
                             break;

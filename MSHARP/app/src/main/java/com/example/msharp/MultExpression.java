@@ -30,15 +30,17 @@ public class MultExpression extends Expression{
         }
     }
 
+    /*Evaluates LHS and RHS of expression. */
     @Override
     public void execute() throws Exception {
         int rhs;
         int lhs;
-        if(isInteger(this.leftHandSide.rawInput()))
+        /*Evaluate LHS factor. */
+        if(isInteger(this.leftHandSide.rawInput())) //its an int literal
         {
             lhs = Integer.parseInt(leftHandSide.rawInput());
         }
-        else if(Numbers.containsKey(leftHandSide.rawInput()))
+        else if(Numbers.containsKey(leftHandSide.rawInput()))   //its a var
         {
             lhs = Numbers.get(leftHandSide.rawInput());
         }
@@ -47,11 +49,13 @@ public class MultExpression extends Expression{
             Exception e = new Exception("Variable does not exist ");
             throw e;
         }
-        if(isInteger(this.rightHandSide.rawInput()))
+
+        /*Evaluate RHS factor. */
+        if(isInteger(this.rightHandSide.rawInput()))  //its an int.
         {
             rhs = Integer.parseInt(rightHandSide.rawInput());
         }
-        else if(Numbers.containsKey(rightHandSide.rawInput()))
+        else if(Numbers.containsKey(rightHandSide.rawInput())) //its a var.
         {
             rhs = Numbers.get(rightHandSide.rawInput());
         }
@@ -61,6 +65,7 @@ public class MultExpression extends Expression{
             throw e;
         }
 
+        /*Calculate result based on operator. */
         switch(operator)
         {
             case "*":
@@ -83,11 +88,13 @@ public class MultExpression extends Expression{
 
     }
 
+    /*Work out expression type.*/
     @Override
     public int type() {
         return 3;
     }
 
+    /*Based on type, will be asked for resultInt. */
     @Override
     public int resultInt() {
         return result;

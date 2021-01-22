@@ -1,5 +1,6 @@
 package com.example.msharp;
 
+/*Class used to save items in MainActivites recycler view.*/
 public class SavedItem {
     private String text;
 

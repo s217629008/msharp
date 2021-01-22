@@ -30,7 +30,7 @@ public class IfStatement extends Statement
         this.Bools = Bools;
         this.Numbers = Numbers;
         this.parser = parser;
-        //this.elseCodeBody = elseCodeBody;
+
     }
     @Override
     public void execute() throws Exception {
@@ -43,8 +43,10 @@ public class IfStatement extends Statement
         boolean result;
 
 
-
+        /*Execute LHS*/
         leftHandSide.execute();
+
+        /*Based on type, flip a bool on if its a Number or not. */
         switch (leftHandSide.type())
         {
             //if x == 10, if x > 10, x == true,
@@ -66,13 +68,14 @@ public class IfStatement extends Statement
 
 
         }
-
+        /*Its a number. */
         if(isNumber)
         {
+            /*Get the results of the LHS and RHS. */
             int lhs = leftHandSide.resultInt();
             rightHandSide.execute();
             int rhs = rightHandSide.resultInt();
-
+            /*Switch based on the operator, execute the expression. Set the result*/
             switch (operator)
             {
                 case "==":
@@ -139,7 +142,7 @@ public class IfStatement extends Statement
                 default:
                     result = false;  //error
             }
-
+            /*If the result is true, carry out the code body. */
             if(result)
             {
                 //do the thing
@@ -152,10 +155,11 @@ public class IfStatement extends Statement
         }
         else //is bool
         {
+            /*Get the results of the LHS and RHS. */
             String lhs = leftHandSide.resultBool();
             rightHandSide.execute();
             String rhs = rightHandSide.resultBool();
-
+            /*Switch based on the operator, execute the expression. Set the result*/
             switch (operator)
             {
                 case "==":

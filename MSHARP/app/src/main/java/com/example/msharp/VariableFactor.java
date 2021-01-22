@@ -2,6 +2,7 @@ package com.example.msharp;
 //import javax.xml.bind.annotation.XmlAttachmentRef;
 import java.util.Map;
 
+/*Represents a variable of various types. */
 public class VariableFactor extends Factor {
 
     public String variableName;
@@ -9,8 +10,6 @@ public class VariableFactor extends Factor {
     Map<String, String> Strings;
     Map<String, String> Bools;
     public int type;
-    /* Matt: add the maps, then have each result retuen from its respective map */
-
 
     public VariableFactor(String variableName, Map<String,Integer> Numbers, Map<String, String> Strings, Map<String, String> Bools)
     {
@@ -21,23 +20,26 @@ public class VariableFactor extends Factor {
 
     }
 
+    /*Get the variable name. */
     @Override
     public String rawInput() {
         return variableName;
     }
 
+    /*Figure out the type of the variable. */
     @Override
     public void execute() throws Exception {
         this.type = type();
     }
 
+    /*Figure out the type of the variable, to then be able to return. */
     @Override
     public int type() throws Exception {
-        if(Numbers.containsKey(variableName))
+        if(Numbers.containsKey(variableName)) //its an int
         {
             return 3;
         }
-        String[] split = variableName.split("!",2);
+        String[] split = variableName.split("!",2); //see if its a notted bool
         if(split[0].equals("")) // notted
         {
             if(Bools.containsKey(split[1]))
@@ -45,23 +47,24 @@ public class VariableFactor extends Factor {
                 return 4;
             }
         }
-        if(Bools.containsKey(variableName))
+        if(Bools.containsKey(variableName)) //see if its a bool
         {
             return 4;
         }
 
-        if(Strings.containsKey(variableName))
+        if(Strings.containsKey(variableName)) // see if its a key
         {
             return 7;
         }
         else
         {
-            Exception e = new Exception("Undeclared variable");
+            Exception e = new Exception("Undeclared variable"); //undeclared.
             throw e;
         }
 
     }
 
+    /*These results are called by other methods based on the type of the var. if the var is of type int, it will request resultInt. etc. */
     @Override
     public int resultInt() {
 

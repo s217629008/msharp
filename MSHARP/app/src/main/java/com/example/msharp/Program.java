@@ -32,7 +32,7 @@ public class Program extends AST
             }
             catch (Exception e)
             {
-                textView.append("Error: " + x + ": " + e.getMessage() + "\r\n"); // print error
+                textView.append("Error: " + e.getMessage() + "\r\n"); // print error
             }
         }
     }

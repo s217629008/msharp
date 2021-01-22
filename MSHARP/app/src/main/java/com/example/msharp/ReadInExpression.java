@@ -38,8 +38,9 @@ public class ReadInExpression extends Expression
 
     }
 
+    /*Evaluate expression. In this case will ask for an input, and store it as a var based on its type. */
     @Override
-    public void execute() {         // (1) whats my type (2) what do I = ?
+    public void execute() throws Exception {
 
         final Handler handler = new Handler()
         {
@@ -103,10 +104,16 @@ public class ReadInExpression extends Expression
             boolResult = readInLine;
             type = 5;
         }
-        else //its a string
+        else if(fun.isString(readInLine))//its a string
         {
             stringResult = readInLine;
             type = 7;
+        }
+        else
+        {
+            Exception e = new Exception("invalid factor read in");
+            throw e;
+
         }
 
 

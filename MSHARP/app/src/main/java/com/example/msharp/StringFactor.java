@@ -1,5 +1,6 @@
 package com.example.msharp;
 
+/*String factor*/
 public class StringFactor extends Factor
 {
     String element;

@@ -3,7 +3,8 @@ package com.example.msharp;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.Map;
-//happy with this
+
+/*Add expression: Represents the addition and subtraction of two integers. ie: 1 + 2, 7 - a (given a is an int).*/
 public class AddExpression extends Expression{
     public Factor leftHandSide;
     public String operator;
@@ -11,55 +12,57 @@ public class AddExpression extends Expression{
     public Map<String, Integer> Numbers;
     public int result;
 
-    public  AddExpression(Factor leftHandSide, String operator, Factor rightHandSide, Map<String, Integer> Numbers)
+    /*Constructor*/
+    public AddExpression(Factor leftHandSide, String operator, Factor rightHandSide, Map<String, Integer> Numbers)
     {
         this.leftHandSide = leftHandSide;
         this.operator = operator;
         this.rightHandSide = rightHandSide;
         this.Numbers = Numbers;
-
     }
 
+
+    /*Called to evaluate the result of the integer.*/
     @Override
     public void execute() throws Exception {
         Functions fun = new Functions();
 
         int rhs;
         int lhs;
-        if(fun.isInteger(this.leftHandSide.rawInput()))
+        if(fun.isInteger(this.leftHandSide.rawInput())) //if it is an int literal
         {
             lhs = Integer.parseInt(leftHandSide.rawInput());
         }
         else
         {
-            if(Numbers.containsKey(leftHandSide.rawInput()))
+            if(Numbers.containsKey(leftHandSide.rawInput())) //else check if its a declared variable.
             {
                 lhs = Numbers.get(leftHandSide.rawInput());
             }
             else
             {
-                Exception e = new Exception("Variable does not exist");
+                Exception e = new Exception("Variable does not exist"); //if not, throw an error.
                 throw e;
             }
         }
-        if(fun.isInteger(this.rightHandSide.rawInput()))
+        if(fun.isInteger(this.rightHandSide.rawInput()))    //if it is an int literal
         {
             rhs = Integer.parseInt(rightHandSide.rawInput());
         }
         else
         {
-            if(Numbers.containsKey(rightHandSide.rawInput()))
+            if(Numbers.containsKey(rightHandSide.rawInput())) //else check if its a declared variable.
             {
                 rhs = Numbers.get(rightHandSide.rawInput());
             }
             else
             {
-                Exception e = new Exception("Variable does not exist");
+                Exception e = new Exception("Variable does not exist"); //if not, throw an error.
                 throw e;
             }
         }
 
-        switch(operator)
+        switch(operator) //Determine if it is an addition or subtraction.
         {
             case "+":
 

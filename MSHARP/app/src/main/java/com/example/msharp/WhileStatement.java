@@ -3,7 +3,7 @@ package com.example.msharp;
 import java.util.ArrayList;
 import java.util.Map;
 
-/* While loop */
+/* While statement */
 public class WhileStatement extends Statement{
 
     public Factor leftHandSide;
@@ -31,19 +31,16 @@ public class WhileStatement extends Statement{
     @Override
     public void execute() throws Exception {
 
-        Functions fun = new Functions();
-
-
         boolean isNumber = false;
-        boolean isExistingVar = false;
         boolean result;
 
-
-
+        /*Execute LHS*/
         leftHandSide.execute();
+
+        /*Based on type, flip a bool on if its a Number or not. */
         switch (leftHandSide.type())
         {
-            //if x == 10, if x > 10, x == true,
+
             case 0:
             case 3:
             case 6:
@@ -57,18 +54,16 @@ public class WhileStatement extends Statement{
                 //bool
                 break;
             case 7:
-                //strings, dont think we will let these be valid
                 break;
-
-
         }
-
+        /*Its a number. */
         if(isNumber)
         {
+            /*Get the results of the LHS and RHS. */
             int lhs = leftHandSide.resultInt();
             rightHandSide.execute();
             int rhs = rightHandSide.resultInt();
-
+            /*Switch based on the operator, execute the expression. Set the result*/
             switch (operator)
             {
                 case "==":
@@ -136,18 +131,17 @@ public class WhileStatement extends Statement{
                     result = false;  //error
             }
 
+            /*While the result is true, carry out the code body. */
             while(result)
             {
-                //do the thing
+
                 for(int n = 0; n < codeBody.size(); n++)
                 {
                     Statement cur = codeBody.get(n);
                     cur.execute();
-
-
-
                 }
 
+                /*After the code body has done a loop, recalculate the condition to see if the loop continues. */
                 lhs = leftHandSide.resultInt();
                 rightHandSide.execute();
                 rhs = rightHandSide.resultInt();
@@ -222,10 +216,12 @@ public class WhileStatement extends Statement{
         }
         else //is bool
         {
+            /*Get the results of the LHS and RHS. */
             String lhs = leftHandSide.resultBool();
             rightHandSide.execute();
             String rhs = rightHandSide.resultBool();
 
+            /*Switch based on the operator, execute the expression. Set the result*/
             switch (operator)
             {
                 case "==":
@@ -254,6 +250,7 @@ public class WhileStatement extends Statement{
 
             }
 
+            /*While the result is true, carry out the code body. */
             while(result)
             {
                 //do if
@@ -263,6 +260,7 @@ public class WhileStatement extends Statement{
                     cur.execute();
                 }
 
+                /*After the code body has done a loop, recalculate the condition to see if the loop continues. */
                 lhs = leftHandSide.resultBool();
                 rightHandSide.execute();
                 rhs = rightHandSide.resultBool();

@@ -1,14 +1,16 @@
 package com.example.msharp;
 
 public class BoolFactor extends Factor{
-// looks ok
+
     public String myValue;
 
+    /*Bool factor*/
     public BoolFactor(String myValue)
     {
         this.myValue = myValue;
     }
 
+    /*store its raw value. */
     @Override
     public String rawInput() {
         return myValue;
@@ -17,7 +19,6 @@ public class BoolFactor extends Factor{
     @Override
     public void execute()
     {
-
     }
 
     @Override
@@ -30,6 +31,8 @@ public class BoolFactor extends Factor{
         return 0;
     }
 
+
+    /*When asked for result, will evaluate if its notted first, then return its result. */
     @Override
     public String resultBool()
     {
@@ -51,7 +54,6 @@ public class BoolFactor extends Factor{
         {
             return myValue;
         }
-
 
     }
 
